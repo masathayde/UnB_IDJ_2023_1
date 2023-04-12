@@ -38,7 +38,7 @@ LINK_PATH = $(addprefix -L,$(addsuffix /lib,$(SDL_PATHS)))
 FLAGS += -mwindows
 DFLAGS += -mconsole
 #LIBS := -lmingw32 -lSDL2main $(LIBS)
-LIBS := -lmingw32 -lSDL2main $(LIBS)
+LIBS := -lSDL2main $(LIBS)
 
 EXEC := $(EXEC).exe
 
