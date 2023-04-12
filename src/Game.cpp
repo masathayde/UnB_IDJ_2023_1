@@ -2,21 +2,23 @@
 
 using namespace std;
 
+Game* Game::instance = nullptr;
+
 Game& Game::GetInstance() {
+    if (Game::instance != nullptr)
+        return *Game::instance;
 
-    if (instance != nullptr)
-        return *instance;
-
-    instance = new Game("title", 1024, 728);
-    return *instance;
+    Game::instance = new Game("title", 1024, 600);
+    return *Game::instance;
 }
 
 Game::Game (string title, int width, int height) {
 
-    if (instance != nullptr) {
+    if (Game::instance != nullptr) {
         // Something went wrong. Trying to create another instance of a singleton class.
         throw std::runtime_error("Error: Cannot create another instance of singleton class");
     }
+    Game::instance = this;
 
     int status = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
     if (status != 0) {

@@ -2,11 +2,13 @@
 
 State::State() {
     quitRequested = false;
-    //Instantiate Sprite
+    LoadAssets();
+    music.Play();
 }
 
 void State::LoadAssets () {
-
+    bg.Open("img/ocean.jpg");
+    music.Open("audio/stageState.ogg");
 }
 
 void State::Update (float dt) {
@@ -17,7 +19,7 @@ void State::Update (float dt) {
 }
 
 void State::Render () {
-
+    bg.Render(0,0);
 }
 
 bool State::QuitRequested () {

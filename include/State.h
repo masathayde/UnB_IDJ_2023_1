@@ -3,6 +3,8 @@
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
+#include "Sprite.h"
+#include "Music.h"
 
 class State {
 
