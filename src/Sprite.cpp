@@ -1,11 +1,13 @@
 #include "Sprite.h"
 #include "Game.h"
 
-Sprite::Sprite () {
+
+
+Sprite::Sprite (GameObject& associated) : Component(associated) {
     texture = nullptr;
 }
 
-Sprite::Sprite (std::string file) {
+Sprite::Sprite (GameObject& associated, std::string file) : Component(associated) {
     texture = nullptr;
     Open(file);
 }
@@ -39,11 +41,25 @@ void Sprite::SetClip (int x, int y, int width, int height) {
     clipRect.h = height;
 }
 
-void Sprite::Render (int x, int y) {
+// void Sprite::Render (int x, int y) {
+
+//     SDL_Rect dstRect;
+//     dstRect.x = x;
+//     dstRect.y = y;
+//     dstRect.w = clipRect.w;
+//     dstRect.h = clipRect.h;
+//     int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
+//     if (status != 0) {
+//         std::string errormsg(SDL_GetError());
+//         throw std::runtime_error("Error: SDL_RenderCopy failed with code " + std::to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
+//     }
+// }
+
+void Sprite::Render () {
 
     SDL_Rect dstRect;
-    dstRect.x = x;
-    dstRect.y = y;
+    dstRect.x = associated.x;
+    dstRect.y = associated.y;
     dstRect.w = clipRect.w;
     dstRect.h = clipRect.h;
     int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
@@ -63,4 +79,12 @@ int Sprite::GetWidth () {
 
 bool Sprite::IsOpen () {
     return texture != nullptr;
+}
+
+bool Sprite::Is (std::string type) {
+    return type == "Sprite";
+}
+
+void Sprite::Update (float dt) {
+
 }
