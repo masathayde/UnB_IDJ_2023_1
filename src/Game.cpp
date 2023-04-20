@@ -1,4 +1,6 @@
 #include "Game.h"
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -19,6 +21,7 @@ Game::Game (string title, int width, int height) {
         throw std::runtime_error("Error: Cannot create another instance of singleton class");
     }
     Game::instance = this;
+    srand(time(NULL));
 
     int status = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
     if (status != 0) {

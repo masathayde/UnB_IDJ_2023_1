@@ -1,4 +1,4 @@
-COMPILER = g++32
+COMPILER = g++
 RMDIR = rm -rdf
 RM = rm -f
 
@@ -37,8 +37,8 @@ SDL_INC_PATH += $(addsuffix /include,$(SDL_PATHS))
 LINK_PATH = $(addprefix -L,$(addsuffix /lib,$(SDL_PATHS)))
 FLAGS += -mwindows
 DFLAGS += -mconsole
-LIBS := -lmingw32 -lSDL2main $(LIBS)
-#LIBS := -lSDL2main $(LIBS)
+#LIBS := -lmingw32 -lSDL2main $(LIBS)
+LIBS := -lSDL2main $(LIBS)
 
 EXEC := $(EXEC).exe
 

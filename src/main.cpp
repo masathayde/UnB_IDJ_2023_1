@@ -3,11 +3,10 @@
 
 int main (int argc, char** args) {
     try {
-        
         Game& game = Game::GetInstance();
         game.Run();
 
-    } catch (std::runtime_error e) {
+    } catch (std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
     }
     return 0;
