@@ -25,7 +25,7 @@ class GameObject {
     bool IsDead ();
     void RequestDelete ();
     void AddComponent(Component* cpt);
-    void RemoveComponent (std::unique_ptr<Component> cpt);
+    void RemoveComponent (Component* cpt);
     Component* GetComponent (std::string type);
 };
 

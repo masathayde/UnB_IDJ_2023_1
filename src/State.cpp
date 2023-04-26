@@ -34,7 +34,7 @@ void State::Update (float dt) {
         (*it).get()->Update(dt);
     }
 
-    for (unsigned int i = 0; i < objectArray.size(); ++i) {
+    for (int i = 0; i < (int) objectArray.size(); ++i) {
         if (objectArray[i]->IsDead()) {
             objectArray.erase(objectArray.begin()+i);
             i--;

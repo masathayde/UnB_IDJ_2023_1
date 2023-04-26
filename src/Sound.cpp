@@ -5,9 +5,9 @@ Sound::Sound (GameObject& associated) : Component (associated) {
     chunk = nullptr;
 }
 
-Sound::Sound (GameObject& associated, std::string type) : Component (associated) {
+Sound::Sound (GameObject& associated, std::string file) : Component (associated) {
     chunk = nullptr;
-    Open(type);
+    Open(file);
 }
 
 Sound::~Sound () {
@@ -17,8 +17,10 @@ Sound::~Sound () {
     }
 }
 
-void Sound::Play (int times) {
+// Temporariamente alterando o retorno da função para int
+int Sound::Play (int times) {
     channel = Mix_PlayChannel(-1, chunk, times);
+    return channel;
 }
 
 void Sound::Stop () {
@@ -34,6 +36,7 @@ void Sound::Open (std::string file) {
         std::string errormsg(SDL_GetError());
         throw std::runtime_error("Error: Mix_LoadWAV failed.\nError message from SDL_GetError(): " + errormsg);
     }
+    printf("Chunk: %ld\n", (long int) chunk);
 }
 
 bool Sound::Is (std::string type) {

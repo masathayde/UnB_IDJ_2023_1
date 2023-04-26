@@ -9,14 +9,14 @@ GameObject::~GameObject () {
 }
 
 void GameObject::Update (float dt) {
-    for (std::vector<std::unique_ptr<Component>>::iterator it = components.begin(); it != components.end(); ++it) {
-        (*it)->Update(dt);
+    for (unsigned int i = 0; i < components.size(); ++i) {
+        components[i]->Update(dt);
     }
 }
 
 void GameObject::Render () {
-    for (std::vector<std::unique_ptr<Component>>::iterator it = components.begin(); it != components.end(); ++it) {
-        (*it)->Render();
+    for (unsigned int i = 0; i < components.size(); ++i) {
+        components[i]->Render();
     }
 }
 
@@ -32,11 +32,11 @@ void GameObject::AddComponent (Component* cpt) {
     components.emplace_back(cpt);
 }
 
-void GameObject::RemoveComponent (std::unique_ptr<Component> cpt) {
-    for (unsigned int i = 0; i < components.size(); ++i) {
-        if (components[i] == cpt) {
+void GameObject::RemoveComponent (Component* cpt) {
+    for (int i = 0; i < (int) components.size(); ++i) {
+        if (components[i].get() == cpt) {
             components.erase(components.begin()+i);
-            i--;
+            break;
         }
     }
 }

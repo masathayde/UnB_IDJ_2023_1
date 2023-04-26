@@ -5,7 +5,8 @@
 
 class Face : public Component {
     int hitpoints;
-
+    bool dead {false};
+    int soundChannel {-2};
  public:
     Face (GameObject& associated);
     void Damage (int damage);
