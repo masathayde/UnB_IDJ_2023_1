@@ -5,12 +5,14 @@
 #include "SDL_include.h"
 #include "Sprite.h"
 #include "Music.h"
+#include "TileSet.h"
 #include <memory>
 
 class State {
 
     //Sprite bg;
     Music music;
+    TileSet* bgTileSet;
     bool quitRequested;
     std::vector<std::unique_ptr<GameObject>> objectArray;
 

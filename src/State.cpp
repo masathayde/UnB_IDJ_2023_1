@@ -2,6 +2,7 @@
 #include "Vec2.h"
 #include "Face.h"
 #include "Sound.h"
+#include "TileMap.h"
 #define PI 3.1416
 
 State::State() {
@@ -10,13 +11,19 @@ State::State() {
     music.Play();
 
     GameObject* background = new GameObject;
-    Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
-    background->AddComponent(eSprite);
-    objectArray.emplace_back(background);
+    // Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
+    // background->AddComponent(eSprite);
+
+	bgTileSet = new TileSet(64, 64, "img/tileset.png");
+	TileMap* bgTileMap = new TileMap(*background, "map/tileMap.txt", bgTileSet);
+	background->AddComponent(bgTileMap);
+	bgTileMap->Render();
+	objectArray.emplace_back(background);
 }
 
 State::~State () {
     objectArray.clear();
+	delete bgTileSet;
 }
 
 void State::LoadAssets () {
