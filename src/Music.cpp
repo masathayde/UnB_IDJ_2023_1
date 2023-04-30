@@ -1,4 +1,5 @@
 #include "Music.h"
+#include "Resources.h"
 #include <iostream>
 
 Music::Music () {
@@ -21,11 +22,7 @@ void Music::Stop (int msToStop) {
 }
 
 void Music::Open (std::string file) {
-    music = Mix_LoadMUS(file.c_str());
-    if (music == nullptr) {
-        std::string errormsg(SDL_GetError());
-        throw std::runtime_error("Error: Mix_LoadMUS failed.\nError message from SDL_GetError(): " + errormsg);
-    }
+    music = Resources::GetMusic(file);
 }
 
 bool Music::IsOpen() {
@@ -34,5 +31,4 @@ bool Music::IsOpen() {
 
 Music::~Music() {
     Stop(0);
-    Mix_FreeMusic(music);
 }

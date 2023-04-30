@@ -11,8 +11,8 @@ State::State() {
     music.Play();
 
     GameObject* background = new GameObject;
-    // Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
-    // background->AddComponent(eSprite);
+    Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
+    background->AddComponent(eSprite);
 
 	bgTileSet = new TileSet(64, 64, "img/tileset.png");
 	TileMap* bgTileMap = new TileMap(*background, "map/tileMap.txt", bgTileSet);
