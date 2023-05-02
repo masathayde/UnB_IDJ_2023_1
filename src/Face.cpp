@@ -15,17 +15,9 @@ void Face::Update (float dt) {
         dead = true;
         Sound* sound = (Sound*) associated.GetComponent("Sound");
         if (sound != nullptr) {
-            // Remover Imagem do GameObject?
-            Sprite* spritePtr = (Sprite*) associated.GetComponent("Sprite");
-            associated.RemoveComponent(spritePtr);
-            soundChannel = sound->Play(0);
+            sound->Play(0);
         }
-    }
-    if (dead) {
-        // Checar se o som já terminou de tocar
-        if(Mix_Playing(soundChannel) == 0) {
-            associated.RequestDelete();
-        }
+        associated.RequestDelete();
     }
 }
 

@@ -14,7 +14,7 @@ class Sound : public Component {
     Sound (GameObject& associated);
     Sound (GameObject& associated, std::string file);
     ~Sound ();
-    int Play (int repeats = 0);
+    void Play (int repeats = 0);
     void Stop ();
     void Open (std::string file);
     bool IsOpen();

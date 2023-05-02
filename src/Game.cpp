@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Resources.h"
+#include "InputManager.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -64,7 +65,9 @@ SDL_Renderer* Game::GetRenderer() {
 
 void Game::Run () {
     while (state->QuitRequested() == false) {
-        state->Update(0);
+        CalculateDeltaTime();
+        InputManager::GetInstance().Update();
+        state->Update(dt);
         state->Render();
         SDL_RenderPresent(renderer);
         SDL_Delay(33);
@@ -72,4 +75,13 @@ void Game::Run () {
     Resources::ClearImages();
     Resources::ClearMusics();
     Resources::ClearSounds();
+}
+
+void Game::CalculateDeltaTime () {
+    dt = ((float) SDL_GetTicks() - (float) frameStart) / 1000; // ms to s
+    frameStart = SDL_GetTicks();
+}
+
+float Game::GetDeltaTime () {
+    return dt;
 }

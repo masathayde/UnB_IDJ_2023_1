@@ -11,16 +11,15 @@ Sound::Sound (GameObject& associated, std::string file) : Component (associated)
     Open(file);
 }
 
+// Se o destrutor chamar Mix_HaltChannel, o som para abruptamente.
 Sound::~Sound () {
-    if (chunk != nullptr) {
-        Mix_HaltChannel(channel);
-    }
+    // if (chunk != nullptr) {
+    //     Mix_HaltChannel(channel);
+    // }
 }
 
-// Temporariamente alterando o retorno da função para int
-int Sound::Play (int times) {
+void Sound::Play (int times) {
     channel = Mix_PlayChannel(-1, chunk, times);
-    return channel;
 }
 
 void Sound::Stop () {
