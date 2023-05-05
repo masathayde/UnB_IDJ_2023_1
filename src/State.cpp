@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "CameraFollower.h"
+#include "RenderQueue.h"
 #define PI 3.1416
 
 State::State() {
@@ -13,17 +14,22 @@ State::State() {
     LoadAssets();
     music.Play();
 
-    GameObject* background = new GameObject;
-	GameObject* tileMapObject = new GameObject;
+    GameObject* background = new GameObject(-1);
+	GameObject* tileMapObject = new GameObject(0);
+	GameObject* tileMapObject2 = new GameObject(2);
     Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
     background->AddComponent(eSprite);
 	CameraFollower* cFollow = new CameraFollower(*background);
 	background->AddComponent(cFollow);
 	bgTileSet = new TileSet(64, 64, "img/tileset.png");
-	TileMap* bgTileMap = new TileMap(*tileMapObject, "map/tileMap.txt", bgTileSet);
+	TileMap* bgTileMap = new TileMap(*tileMapObject, "map/tileMap_half_1.txt", bgTileSet);
+	TileMap* bgTileMap2 = new TileMap(*tileMapObject2, "map/tileMap_half_2.txt", bgTileSet);
 	tileMapObject->AddComponent(bgTileMap);
+	tileMapObject2->AddComponent(bgTileMap2);
+
 	objectArray.emplace_back(background);
 	objectArray.emplace_back(tileMapObject);
+	objectArray.emplace_back(tileMapObject2);
 }
 
 State::~State () {
@@ -60,10 +66,12 @@ void State::Update (float dt) {
 }
 
 void State::Render () {
-
+	// Not actually rendering, just scheduling rendering jobs
     for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
         (*it).get()->Render();
     }
+	RenderQueue& rq = RenderQueue::GetInstance();
+	rq.RenderJobs();
 }
 
 bool State::QuitRequested () {
@@ -155,7 +163,7 @@ void State::Input() {
 // }
 
 void State::AddObject (int inX, int inY) {
-    GameObject* enemy = new GameObject;
+    GameObject* enemy = new GameObject(1);
     enemy->box.x = inX;
     enemy->box.y = inY;
     Sprite* eSprite = new Sprite(*enemy, "img/penguinface.png");

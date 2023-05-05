@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Resources.h"
 #include "Camera.h"
+#include "RenderQueue.h"
 
 Sprite::Sprite (GameObject& associated) : Component(associated) {
     texture = nullptr;
@@ -34,10 +35,12 @@ void Sprite::SetClip (int x, int y, int width, int height) {
 }
 
 void Sprite::Render () {
-    Render(associated.box.x, associated.box.y);
+    // Render(associated.box.x, associated.box.y);
+    RenderQueue& rq = RenderQueue::GetInstance();
+    rq.QueueJob(this, associated.box.x, associated.box.y, associated.z, clipRect.x, clipRect.y, clipRect.w, clipRect.h);
 }
 
-void Sprite::Render (float x, float y) {
+void Sprite::Render (float x, float y, float z) {
     SDL_Rect dstRect;
     Camera camera;
     dstRect.x = x - camera.pos.x;

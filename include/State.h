@@ -10,7 +10,6 @@
 
 class State {
 
-    //Sprite bg;
     Music music;
     TileSet* bgTileSet;
     bool quitRequested;

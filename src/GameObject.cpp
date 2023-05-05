@@ -1,6 +1,7 @@
 #include "GameObject.h"
 
-GameObject::GameObject () {
+GameObject::GameObject (int iZ) {
+    z = iZ;
     isDead = false;
 }
 

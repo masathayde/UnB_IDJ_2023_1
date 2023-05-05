@@ -17,8 +17,8 @@ class GameObject {
 
  public:
     Rect box;
-
-    GameObject ();
+    float z;
+    GameObject (int z = 0);
     ~GameObject ();
     void Update (float dt);
     void Render ();
