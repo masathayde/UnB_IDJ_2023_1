@@ -29,6 +29,7 @@ void RenderQueue::QueueJob (Sprite* ptr, float x, float y, float z, int xOffset,
 void RenderQueue::RenderJobs () {
     // Ordenar por valor de z;
     timsort();
+
     for (auto it : jobQueue) {
         // printf("%f ", it.z);
         it.sprite->SetClip(it.x_offset, it.y_offset, it.tileWidth, it.tileHeight);
@@ -65,7 +66,7 @@ void RenderQueue::merge (std::vector<renderJob>& arr, int left, int mid, int rig
     int i {0};
     int j {0};
 
-    for (int k = left; k < right; ++k) {
+    for (int k = left; k <= right; ++k) {
         if (i < len1 && (j >= len2 || leftArr[i].z <= rightArr[j].z)) {
             arr[k] = leftArr[i];
             i++;

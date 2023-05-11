@@ -11,6 +11,7 @@
 
 State::State() {
     quitRequested = false;
+	started = false;
     LoadAssets();
     music.Play();
 
@@ -27,9 +28,13 @@ State::State() {
 	tileMapObject->AddComponent(bgTileMap);
 	tileMapObject2->AddComponent(bgTileMap2);
 
-	objectArray.emplace_back(background);
-	objectArray.emplace_back(tileMapObject);
-	objectArray.emplace_back(tileMapObject2);
+	// objectArray.emplace_back(background);
+	// objectArray.emplace_back(tileMapObject);
+	// objectArray.emplace_back(tileMapObject2);
+
+	objectArray.emplace(background, background);
+	objectArray.emplace(tileMapObject, tileMapObject);
+	objectArray.emplace(tileMapObject2, tileMapObject2);
 }
 
 State::~State () {
@@ -42,6 +47,8 @@ void State::LoadAssets () {
     music.Open("audio/stageState.ogg");
 }
 
+
+
 void State::Update (float dt) {
 	// if(SDL_QuitRequested()) {
     //     quitRequested = true;
@@ -53,23 +60,38 @@ void State::Update (float dt) {
 	Input();
 	Camera camera;
 	camera.Update(dt);
-    for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
-        (*it).get()->Update(dt);
-    }
+    // for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
+    //     (*it).get()->Update(dt);
+    // }
+	for (auto it : objectArray) {
+		it.second->Update(dt);
+	}
 
-    for (int i = 0; i < (int) objectArray.size(); ++i) {
-        if (objectArray[i]->IsDead()) {
-            objectArray.erase(objectArray.begin()+i);
-            i--;
-        }
-    }
+    // for (int i = 0; i < (int) objectArray.size(); ++i) {
+    //     if (objectArray[i]->IsDead()) {
+    //         objectArray.erase(objectArray.begin()+i);
+    //         i--;
+    //     }
+    // }
+	std::vector<GameObject*> toErase;
+	for (auto it: objectArray) {
+		if (it.second->IsDead()) {
+			toErase.push_back(it.first);
+		}
+	}
+	for (auto obj : toErase) {
+		objectArray.erase(obj);
+	}
 }
 
 void State::Render () {
 	// Not actually rendering, just scheduling rendering jobs
-    for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
-        (*it).get()->Render();
-    }
+    // for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
+    //     (*it).get()->Render();
+    // }
+	for (auto it = objectArray.begin(); it != objectArray.end(); ++it) {
+		it->second->Render();
+	}
 	RenderQueue& rq = RenderQueue::GetInstance();
 	rq.RenderJobs();
 }
@@ -87,9 +109,13 @@ void State::Input() {
 	}
 
 	if (inputM.MousePress(LEFT_MOUSE_BUTTON)) {
-		for(int i = objectArray.size() - 1; i >= 0; --i) {
+		// for(int i = objectArray.size() - 1; i >= 0; --i) {
+		for (auto obj : objectArray) {
 			// Obtem o ponteiro e casta pra Face.
-			GameObject* go = (GameObject*) objectArray[i].get();
+			// GameObject* go = (GameObject*) objectArray[i].get();
+			GameObject* go = (GameObject*) obj.second.get();
+
+
 			// Nota: Desencapsular o ponteiro é algo que devemos evitar ao máximo.
 			// O propósito do unique_ptr é manter apenas uma cópia daquele ponteiro,
 			// ao usar get(), violamos esse princípio e estamos menos seguros.
@@ -172,6 +198,6 @@ void State::AddObject (int inX, int inY) {
     enemy->AddComponent(eSprite);
     enemy->AddComponent(eSound);
     enemy->AddComponent(face);
-    objectArray.emplace_back(enemy);
+    objectArray.emplace(enemy, enemy);
 
 }
