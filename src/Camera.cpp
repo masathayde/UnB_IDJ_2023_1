@@ -38,7 +38,7 @@ void Camera::Update (float dt) {
             speed.y = 0;
         }
     }
-    // Atualizar posição
+    // Atualizar posição. Sem aceleração.
     pos.x = pos.x + speed.x * dt;
     pos.y = pos.y + speed.y * dt;
 

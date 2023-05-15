@@ -18,6 +18,7 @@ class GameObject {
  public:
     Rect box;
     float z;
+    bool started;
     GameObject (int z = 0);
     ~GameObject ();
     void Update (float dt);
@@ -27,6 +28,7 @@ class GameObject {
     void AddComponent(Component* cpt);
     void RemoveComponent (Component* cpt);
     Component* GetComponent (std::string type);
+    void Start ();
 };
 
 #endif

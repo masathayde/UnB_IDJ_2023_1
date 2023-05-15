@@ -19,7 +19,7 @@ class State {
     std::unordered_map<GameObject*, std::shared_ptr<GameObject>> objectArray;
 
     void Input ();
-    void AddObject (int mouseX, int mouseY);
+    // void AddObject (int mouseX, int mouseY);
 
  public:
     State();
