@@ -18,6 +18,7 @@ class Alien : public Component {
     int hp;
     std::queue<Action> taskQueue;
     std::vector<std::weak_ptr<GameObject>> minionArray;
+    void Shoot (Vec2 target);
 
  public:
     Alien (GameObject& go, int nMinions);

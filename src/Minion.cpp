@@ -10,10 +10,16 @@ Minion::Minion (GameObject& go, std::weak_ptr<GameObject> iAlienCenter, float ar
     if (!iAlienCenter.expired()) {
         alienCenter = iAlienCenter;
     }
+    float size = rand() % 6;
+    size = (size/10) + 1.0;
     arc = arcOffSetDeg;
-    Sprite* sprite = new Sprite(go, "img/minion.png");
+    Sprite* sprite = new Sprite(go, "img/minionbullet1.png");
+    sprite->SetScaleX(size, size);
     associated.AddComponent(sprite);
     // Calcular box
+    associated.box.w = sprite->GetWidth();
+    associated.box.h = sprite->GetHeight();
+    associated.angleDeg = arc * DEGRADRATIO;
 }
 
 void Minion::Update (float dt) {
@@ -23,9 +29,10 @@ void Minion::Update (float dt) {
         return;
     }
 
-    float angularSpeed = PI/2;
+    float angularSpeed = PI/3;
     Vec2 distanceFromAlien(200, 0);
     arc = fmod(arc + angularSpeed * dt, 2 * PI);
+    associated.angleDeg = arc * DEGRADRATIO;
     Vec2 position = distanceFromAlien.GetRotated(arc) + (alienCenter.lock())->box.Center();
     associated.box = associated.box.TopLeftCornerIfCenterIs(position);
 }
@@ -43,7 +50,7 @@ void Minion::Shoot (Vec2 pos) {
     Vec2 currentPos = associated.box.Center();
     float angle = currentPos.AngleOfLineTo(pos);
     GameObject* bulletGo = new GameObject(1);
-    Bullet* bullet = new Bullet(*bulletGo, angle, 200, 1, 600, spriteFile);
+    Bullet* bullet = new Bullet(*bulletGo, angle, 400, 1, 600, spriteFile);
     bulletGo->AddComponent(bullet);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(currentPos);
     Game::GetInstance().GetState().AddObject(bulletGo);

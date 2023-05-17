@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Game.h"
 #include "Minion.h"
+#include <cmath>
 
 Alien::Alien (GameObject& go, int i_nMinions) : Component(go) {
     Sprite* sprite = new Sprite(go, "img/alien.png");
@@ -16,14 +17,19 @@ Alien::~Alien () {
 }
 
 void Alien::Start () {
-    GameObject* minionGO = new GameObject(1);
-    std::weak_ptr<GameObject> alienGoPTR;
-    alienGoPTR = Game::GetInstance().GetState().GetObjectPtr(&associated);
-    Minion* minionCPT = new Minion(*minionGO, alienGoPTR);
-    minionGO->AddComponent(minionCPT);
-    Game::GetInstance().GetState().AddObject(minionGO);
-    std::weak_ptr<GameObject> minionPtr = Game::GetInstance().GetState().GetObjectPtr(minionGO);
-    minionArray.push_back(minionPtr);
+    int minionCount = 5;
+    float arcOffset = 0;
+    float offsetIncrease = 2.0 * 3.1416 / 5.0;
+    for (int i = 0; i < minionCount; ++i, arcOffset += offsetIncrease) {
+        GameObject* minionGO = new GameObject(1);
+        std::weak_ptr<GameObject> alienGoPTR;
+        alienGoPTR = Game::GetInstance().GetState().GetObjectPtr(&associated);
+        Minion* minionCPT = new Minion(*minionGO, alienGoPTR, arcOffset);
+        minionGO->AddComponent(minionCPT);
+        Game::GetInstance().GetState().AddObject(minionGO);
+        std::weak_ptr<GameObject> minionPtr = Game::GetInstance().GetState().GetObjectPtr(minionGO);
+        minionArray.push_back(minionPtr);
+    }
 }
 
 void Alien::Update (float dt) {
@@ -51,9 +57,6 @@ void Alien::Update (float dt) {
         float angle;
         Vec2 speedVec(speed, 0);
 
-        std::weak_ptr<GameObject> minionWPTR = minionArray[0];
-        Minion* minion = (Minion*) minionWPTR.lock()->GetComponent("Minion");
-
         switch (nextAction.type) {
             case Action::MOVE:
                 angle = currentPos.AngleOfLineTo(nextAction.pos);
@@ -70,7 +73,7 @@ void Alien::Update (float dt) {
                 break;
 
             case Action::SHOOT:
-                minion->Shoot(nextAction.pos);
+                Shoot(nextAction.pos);
                 taskQueue.pop();
                 break;
 
@@ -79,6 +82,9 @@ void Alien::Update (float dt) {
         }
 
     }
+
+    float angularSpeed = 180 / 9;
+    associated.angleDeg = fmod(associated.angleDeg - (angularSpeed * dt), 360);
 
     if (hp <= 0) {
         associated.RequestDelete();
@@ -96,4 +102,24 @@ bool Alien::Is (std::string type) {
 Alien::Action::Action (Action::ActionType type, float x, float y) {
     this->type = type;
     this->pos = Vec2(x,y);
+}
+
+void Alien::Shoot (Vec2 target) {
+    if (minionArray.empty())
+        return;
+    // Escolher minion mais próximo. Começamos com o primeiro.
+    std::weak_ptr<GameObject> chosenMinion = minionArray[0];
+    Vec2 minionPos = chosenMinion.lock()->box.Center();
+    float shortestDistance = minionPos.DistanceTo(target);
+    for (int i = 1; i < (int) minionArray.size(); ++i) {
+        std::weak_ptr<GameObject> candidate = minionArray[i];
+        Vec2 candidatePos = candidate.lock()->box.Center();
+        float candidateDistance = candidatePos.DistanceTo(target);
+        if (candidateDistance < shortestDistance) {
+            chosenMinion = candidate;
+            shortestDistance = candidateDistance;
+        }
+    }
+    Minion* minion = (Minion*) chosenMinion.lock()->GetComponent("Minion");
+    minion->Shoot(target);
 }
