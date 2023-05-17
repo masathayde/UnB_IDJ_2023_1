@@ -13,7 +13,7 @@ Minion::Minion (GameObject& go, std::weak_ptr<GameObject> iAlienCenter, float ar
     float size = rand() % 6;
     size = (size/10) + 1.0;
     arc = arcOffSetDeg;
-    Sprite* sprite = new Sprite(go, "img/minionbullet1.png");
+    Sprite* sprite = new Sprite(go, "img/minion.png");
     sprite->SetScaleX(size, size);
     associated.AddComponent(sprite);
     // Calcular box
