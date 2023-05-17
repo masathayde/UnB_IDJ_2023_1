@@ -17,6 +17,7 @@ class GameObject {
 
  public:
     Rect box;
+    double angleDeg {0.0};
     float z;
     bool started;
     GameObject (int z = 0);

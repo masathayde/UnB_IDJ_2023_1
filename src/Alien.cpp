@@ -2,7 +2,8 @@
 #include "Sprite.h"
 #include "InputManager.h"
 #include "Camera.h"
-#include <math.h>
+#include "Game.h"
+#include "Minion.h"
 
 Alien::Alien (GameObject& go, int i_nMinions) : Component(go) {
     Sprite* sprite = new Sprite(go, "img/alien.png");
@@ -15,7 +16,14 @@ Alien::~Alien () {
 }
 
 void Alien::Start () {
-
+    GameObject* minionGO = new GameObject(1);
+    std::weak_ptr<GameObject> alienGoPTR;
+    alienGoPTR = Game::GetInstance().GetState().GetObjectPtr(&associated);
+    Minion* minionCPT = new Minion(*minionGO, alienGoPTR);
+    minionGO->AddComponent(minionCPT);
+    Game::GetInstance().GetState().AddObject(minionGO);
+    std::weak_ptr<GameObject> minionPtr = Game::GetInstance().GetState().GetObjectPtr(minionGO);
+    minionArray.push_back(minionPtr);
 }
 
 void Alien::Update (float dt) {
@@ -43,6 +51,9 @@ void Alien::Update (float dt) {
         float angle;
         Vec2 speedVec(speed, 0);
 
+        std::weak_ptr<GameObject> minionWPTR = minionArray[0];
+        Minion* minion = (Minion*) minionWPTR.lock()->GetComponent("Minion");
+
         switch (nextAction.type) {
             case Action::MOVE:
                 angle = currentPos.AngleOfLineTo(nextAction.pos);
@@ -59,6 +70,8 @@ void Alien::Update (float dt) {
                 break;
 
             case Action::SHOOT:
+                minion->Shoot(nextAction.pos);
+                taskQueue.pop();
                 break;
 
             default:

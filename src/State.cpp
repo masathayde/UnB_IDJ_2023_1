@@ -64,9 +64,6 @@ void State::Start () {
 }
 
 void State::Update (float dt) {
-	// if(SDL_QuitRequested()) {
-    //     quitRequested = true;
-    // }
 	InputManager& inputM = InputManager::GetInstance();
 	if (inputM.QuitRequested() || inputM.KeyPress(SDLK_ESCAPE))
 		quitRequested = true;

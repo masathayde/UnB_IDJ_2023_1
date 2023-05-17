@@ -17,6 +17,7 @@ class Sprite : public Component {
     int width;
     int height;
     SDL_Rect clipRect;
+    Vec2 scale {Vec2(1,1)};
 
  public:
     Sprite (GameObject& associated);
@@ -32,6 +33,8 @@ class Sprite : public Component {
     bool IsOpen ();
     bool Is (std::string type);
     void Update (float dt);
+    void SetScaleX (float scaleX, float scaleY);
+    Vec2 GetScale ();
 };
 
 #endif

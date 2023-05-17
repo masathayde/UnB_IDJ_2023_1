@@ -27,7 +27,6 @@ void Sprite::Open (std::string file) {
 }
 
 void Sprite::SetClip (int x, int y, int width, int height) {
-
     clipRect.x = x;
     clipRect.y = y;
     clipRect.w = width;
@@ -45,21 +44,23 @@ void Sprite::Render (float x, float y, float z) {
     Camera camera;
     dstRect.x = x - camera.pos.x;
     dstRect.y = y - camera.pos.y;
-    dstRect.w = clipRect.w;
-    dstRect.h = clipRect.h;
-    int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
+    dstRect.w = clipRect.w * scale.x;
+    dstRect.h = clipRect.h * scale.y;
+    // int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
+    int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect, associated.angleDeg, nullptr, SDL_FLIP_NONE);
     if (status != 0) {
         std::string errormsg(SDL_GetError());
         throw std::runtime_error("Error: SDL_RenderCopy failed with code " + std::to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
     }
+    // status = SDL_RenderDrawRect(Game::GetInstance().GetRenderer(), &dstRect);
 }
 
 int Sprite::GetHeight () {
-    return height;
+    return height * scale.y;
 }
 
 int Sprite::GetWidth () {
-    return width;
+    return width * scale.x;
 }
 
 bool Sprite::IsOpen () {
@@ -72,4 +73,16 @@ bool Sprite::Is (std::string type) {
 
 void Sprite::Update (float dt) {
 
+}
+
+void Sprite::SetScaleX (float scaleX, float scaleY) {
+    float newScaleX = scaleX != 0 ? scaleX : scale.x;
+    float newScaleY = scaleY != 0 ? scaleY : scale.y;
+    scale = Vec2(newScaleX, newScaleY);
+    associated.box.w *= scale.x;
+    associated.box.h *= scale.y;
+}
+
+Vec2 Sprite::GetScale () {
+    return scale;
 }

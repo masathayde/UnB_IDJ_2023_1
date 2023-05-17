@@ -17,8 +17,8 @@ bool Rect::Contains (float iX, float iY) {
 }
 
 Vec2 Rect::Center () {
-    float centerX = x + (w/2.0);
-    float centerY = y + (h/2.0);
+    float centerX = x + w/2;
+    float centerY = y + h/2;
     return Vec2(centerX, centerY);
 }
 
