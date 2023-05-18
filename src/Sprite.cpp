@@ -8,8 +8,10 @@ Sprite::Sprite (GameObject& associated) : Component(associated) {
     texture = nullptr;
 }
 
-Sprite::Sprite (GameObject& associated, std::string file) : Component(associated) {
+Sprite::Sprite (GameObject& associated, std::string file, int iFrameCount, float iFrameTime) : Component(associated) {
     texture = nullptr;
+    frameCount = iFrameCount;
+    frameTime = iFrameTime;
     Open(file);
 }
 
@@ -18,9 +20,9 @@ Sprite::~Sprite () {
 }
 
 void Sprite::Open (std::string file) {
-
     texture = Resources::GetImage(file);
     SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+    width = width / frameCount;
     SetClip(0, 0, width, height);
     associated.box.w = width;
     associated.box.h = height;
@@ -72,7 +74,10 @@ bool Sprite::Is (std::string type) {
 }
 
 void Sprite::Update (float dt) {
-
+    float totalTime = (float) frameCount * frameTime;
+    timeElapsed = SDL_fmod(timeElapsed + dt, totalTime);
+    currentFrame = (int) SDL_floor(timeElapsed / frameTime);
+    SetClip(width*currentFrame, 0, width, height);
 }
 
 void Sprite::SetScaleX (float scaleX, float scaleY) {
@@ -85,4 +90,16 @@ void Sprite::SetScaleX (float scaleX, float scaleY) {
 
 Vec2 Sprite::GetScale () {
     return scale;
+}
+
+void Sprite::SetFrame (int iFrame) {
+    currentFrame = iFrame;
+}
+
+void Sprite::SetFrameCount (int iFrameCount) {
+    frameCount = iFrameCount;
+}
+
+void Sprite::SetFrameTime (float iFrameTime) {
+    frameTime = iFrameTime;
 }

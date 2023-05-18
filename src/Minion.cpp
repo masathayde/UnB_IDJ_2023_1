@@ -46,11 +46,11 @@ bool Minion::Is (std::string type) {
 }
 
 void Minion::Shoot (Vec2 pos) {
-    std::string spriteFile = "img/minionbullet1.png";
+    std::string spriteFile = "img/minionbullet2.png";
     Vec2 currentPos = associated.box.Center();
     float angle = currentPos.AngleOfLineTo(pos);
     GameObject* bulletGo = new GameObject(1);
-    Bullet* bullet = new Bullet(*bulletGo, angle, 400, 1, 600, spriteFile);
+    Bullet* bullet = new Bullet(*bulletGo, angle, 100, 1, 600, spriteFile);
     bulletGo->AddComponent(bullet);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(currentPos);
     Game::GetInstance().GetState().AddObject(bulletGo);
