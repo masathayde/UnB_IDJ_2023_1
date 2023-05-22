@@ -3,6 +3,7 @@
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
+#include "Game.h"
 
 GameObject* Camera::focus = nullptr;
 Vec2 Camera::pos = Vec2(0, 0);
@@ -14,6 +15,7 @@ void Camera::Follow (GameObject* newFocus) {
 
 void Camera::Unfollow () {
     focus = nullptr;
+    Game::GetInstance().GetState().RemoveCameraFocus();
 }
 
 void Camera::Update (float dt) {
@@ -37,10 +39,17 @@ void Camera::Update (float dt) {
         } else {
             speed.y = 0;
         }
+        // Atualizar posição. Sem aceleração.
+        pos.x = pos.x + speed.x * dt;
+        pos.y = pos.y + speed.y * dt;
+    } else {
+        // Ver qual é o tamanho da janela.
+        // Queremos calcular posição da camera de modo que o objeto foco
+        // fique no meio.
+        SDL_Renderer* renderer = Game::GetInstance().GetRenderer();
+        int width, height;
+        SDL_GetRendererOutputSize(renderer, &width, &height);
+        Vec2 focusPos = focus->box.GetCenter();
+        pos = focusPos - Vec2((float) width/2.0, (float) height/2.0);
     }
-    // Atualizar posição. Sem aceleração.
-    pos.x = pos.x + speed.x * dt;
-    pos.y = pos.y + speed.y * dt;
-
-    // printf("Camera pos: %f %f\n", pos.x, pos.y);
 }

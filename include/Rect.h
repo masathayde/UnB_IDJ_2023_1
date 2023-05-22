@@ -12,7 +12,7 @@ class Rect {
     Rect ();
     Rect (float x, float y, float w, float h);
     bool Contains (float x, float y);
-    Vec2 Center ();
+    Vec2 GetCenter ();
     Rect TopLeftCornerIfCenterIs (const Vec2& point);
     float CenterDistanceTo (Rect other);
     Rect& AddVec2 (const Vec2& other);

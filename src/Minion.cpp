@@ -33,7 +33,7 @@ void Minion::Update (float dt) {
     Vec2 distanceFromAlien(200, 0);
     arc = fmod(arc + angularSpeed * dt, 2 * PI);
     associated.angleDeg = arc * DEGRADRATIO;
-    Vec2 position = distanceFromAlien.GetRotated(arc) + (alienCenter.lock())->box.Center();
+    Vec2 position = distanceFromAlien.GetRotated(arc) + (alienCenter.lock())->box.GetCenter();
     associated.box = associated.box.TopLeftCornerIfCenterIs(position);
 }
 
@@ -47,7 +47,7 @@ bool Minion::Is (std::string type) {
 
 void Minion::Shoot (Vec2 pos) {
     std::string spriteFile = "img/minionbullet2.png";
-    Vec2 currentPos = associated.box.Center();
+    Vec2 currentPos = associated.box.GetCenter();
     float angle = currentPos.AngleOfLineTo(pos);
     GameObject* bulletGo = new GameObject(1);
     Bullet* bullet = new Bullet(*bulletGo, angle, 100, 1, 600, spriteFile);

@@ -8,6 +8,7 @@
 #include "CameraFollower.h"
 #include "RenderQueue.h"
 #include "Alien.h"
+#include "PenguinBody.h"
 #define PI 3.1416
 
 State::State() {
@@ -16,33 +17,48 @@ State::State() {
     LoadAssets();
     music.Play();
 
+	// Background
     GameObject* background = new GameObject(-1);
-	GameObject* tileMapObject = new GameObject(0);
-	GameObject* tileMapObject2 = new GameObject(2);
-    Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
-    background->AddComponent(eSprite);
 	CameraFollower* cFollow = new CameraFollower(*background);
+	Sprite* eSprite = new Sprite(*background, "img/ocean.jpg");
 	background->AddComponent(cFollow);
+	background->AddComponent(eSprite);
+	AddObject(background);
+
+	// Tileset
 	bgTileSet = new TileSet(64, 64, "img/tileset.png");
+
+	// Ground
+	GameObject* tileMapObject = new GameObject(0);
 	TileMap* bgTileMap = new TileMap(*tileMapObject, "map/tileMap_half_1.txt", bgTileSet);
-	TileMap* bgTileMap2 = new TileMap(*tileMapObject2, "map/tileMap_half_2.txt", bgTileSet);
 	tileMapObject->AddComponent(bgTileMap);
+	AddObject(tileMapObject);
+
+	// Clouds
+	GameObject* tileMapObject2 = new GameObject(3);
+	TileMap* bgTileMap2 = new TileMap(*tileMapObject2, "map/tileMap_half_2.txt", bgTileSet);
 	tileMapObject2->AddComponent(bgTileMap2);
+	AddObject(tileMapObject2);
 
-	// objectArray.emplace_back(background);
-	// objectArray.emplace_back(tileMapObject);
-	// objectArray.emplace_back(tileMapObject2);
-
-	objectArray.emplace(background, background);
-	objectArray.emplace(tileMapObject, tileMapObject);
-	objectArray.emplace(tileMapObject2, tileMapObject2);
-
+	// Alien
 	GameObject* alienGo = new GameObject(1);
 	Alien* alien = new Alien(*alienGo, 0);
 	alienGo->box.x = 512;
 	alienGo->box.y = 300;
 	alienGo->AddComponent(alien);
-	objectArray.emplace(alienGo, alienGo);
+	AddObject(alienGo);
+
+	// Player penguin
+	GameObject* penguinGo = new GameObject(1);
+	PenguinBody* penguin = new PenguinBody(*penguinGo);
+	penguinGo->AddComponent(penguin);
+	penguinGo->box.x = 704;
+	penguinGo->box.y = 640;
+	std::weak_ptr<GameObject> cameraFocus = AddObject(penguinGo);
+
+	// Make camera follow penguin
+	Camera::Follow(penguinGo);
+	AddCameraFocus(cameraFocus);
 }
 
 State::~State () {
@@ -51,16 +67,55 @@ State::~State () {
 }
 
 void State::LoadAssets () {
-    // bg.Open("img/ocean.jpg");
     music.Open("audio/stageState.ogg");
 }
 
 void State::Start () {
 	LoadAssets();
 	for (auto it: objectArray) {
-		it.second->Start();
+		it->Start();
 	}
 	started = true;
+}
+
+void State::UpdateObjects (float dt) {
+	// for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
+    //     (*it).get()->Update(dt);
+    // }
+	for (auto it : objectArray) {
+		if (cameraFocus.expired() == false && it.get() == cameraFocus.lock().get()) {
+			continue;
+		}
+		it->Update(dt);
+	}
+}
+
+void State::EraseObjects () {
+	// Old code, delete later
+
+	// std::vector<GameObject*> toErase;
+	// for (auto it: objectArray) {
+	// 	if (it.second->IsDead()) {
+	// 		toErase.push_back(it.first);
+	// 	}
+	// }
+	// for (auto obj : toErase) {
+	// 	objectArray.erase(obj);
+	// }
+
+	// for (int i = 0; i < (int) objectArray.size(); ++i) {
+    //     if (objectArray[i]->IsDead()) {
+    //         objectArray.erase(objectArray.begin()+i);
+    //         i--;
+    //     }
+    // }
+
+	for (std::list<std::shared_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
+		if (it->get()->IsDead()) {
+			objectArray.erase(it);
+		}
+	}
+
 }
 
 void State::Update (float dt) {
@@ -70,29 +125,13 @@ void State::Update (float dt) {
 
 	Input();
 	Camera camera;
+	// Atualiza foco da câmera primeiro.
+	if (cameraFocus.expired() == false) {
+		cameraFocus.lock()->Update(dt);
+	}
 	camera.Update(dt);
-    // for (std::vector<std::unique_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
-    //     (*it).get()->Update(dt);
-    // }
-	for (auto it : objectArray) {
-		it.second->Update(dt);
-	}
-
-    // for (int i = 0; i < (int) objectArray.size(); ++i) {
-    //     if (objectArray[i]->IsDead()) {
-    //         objectArray.erase(objectArray.begin()+i);
-    //         i--;
-    //     }
-    // }
-	std::vector<GameObject*> toErase;
-	for (auto it: objectArray) {
-		if (it.second->IsDead()) {
-			toErase.push_back(it.first);
-		}
-	}
-	for (auto obj : toErase) {
-		objectArray.erase(obj);
-	}
+    UpdateObjects(dt);
+	EraseObjects();
 }
 
 void State::Render () {
@@ -101,7 +140,7 @@ void State::Render () {
     //     (*it).get()->Render();
     // }
 	for (auto it = objectArray.begin(); it != objectArray.end(); ++it) {
-		it->second->Render();
+		it->get()->Render();
 	}
 	RenderQueue& rq = RenderQueue::GetInstance();
 	rq.RenderJobs();
@@ -162,7 +201,7 @@ void State::Input() {
 
 std::weak_ptr<GameObject> State::AddObject (GameObject* goptr) {
 	std::shared_ptr<GameObject> goShrdPtr(goptr);
-	objectArray.emplace(goptr, goShrdPtr);
+	objectArray.push_back(goShrdPtr);
 	if (this->started) {
 		goptr->Start();
 	}
@@ -172,10 +211,18 @@ std::weak_ptr<GameObject> State::AddObject (GameObject* goptr) {
 
 std::weak_ptr<GameObject> State::GetObjectPtr (GameObject* goptr) {
 	std::weak_ptr<GameObject> returnPtr;
-	std::unordered_map<GameObject*, std::shared_ptr<GameObject>>::iterator it;
-	it = objectArray.find(goptr);
-	if (it != objectArray.end()) {
-		returnPtr = it->second;
+	for (auto it : objectArray) {
+		if (goptr == it.get()) {
+			returnPtr = it;	
+		}
 	}
 	return returnPtr;
+}
+
+void State::AddCameraFocus (std::weak_ptr<GameObject> object) {
+	cameraFocus = object;
+}
+
+void State::RemoveCameraFocus () {
+	cameraFocus.reset();
 }

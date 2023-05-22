@@ -16,7 +16,7 @@ bool Rect::Contains (float iX, float iY) {
         return false;
 }
 
-Vec2 Rect::Center () {
+Vec2 Rect::GetCenter () {
     float centerX = x + w/2;
     float centerY = y + h/2;
     return Vec2(centerX, centerY);
@@ -30,8 +30,8 @@ Rect Rect::TopLeftCornerIfCenterIs (const Vec2& point) {
 }
 
 float Rect::CenterDistanceTo (Rect other) {
-    Vec2 thisCenter = Center();
-    Vec2 otherCenter = other.Center();
+    Vec2 thisCenter = GetCenter();
+    Vec2 otherCenter = other.GetCenter();
     return thisCenter.DistanceTo(otherCenter);
 }
 

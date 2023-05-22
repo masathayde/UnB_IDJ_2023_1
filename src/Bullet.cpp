@@ -15,7 +15,7 @@ Bullet::Bullet (GameObject& go, float angle, float iSpeed, int iDamage, float ma
 }
 
 void Bullet::Update (float dt) {
-    Vec2 currentpos = associated.box.Center();
+    Vec2 currentpos = associated.box.GetCenter();
     Vec2 distanceToTravel = speed * dt;
     currentpos += distanceToTravel;
     distanceLeft -= distanceToTravel.Magnitude();

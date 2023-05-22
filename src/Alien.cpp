@@ -53,7 +53,7 @@ void Alien::Update (float dt) {
         Action nextAction = taskQueue.front();
 
         float speed = 150;
-        Vec2 currentPos = associated.box.Center();
+        Vec2 currentPos = associated.box.GetCenter();
         float angle;
         Vec2 speedVec(speed, 0);
 
@@ -73,7 +73,7 @@ void Alien::Update (float dt) {
                 break;
 
             case Action::SHOOT:
-                Shoot(nextAction.pos);
+                //Shoot(nextAction.pos);
                 taskQueue.pop();
                 break;
 
@@ -109,11 +109,11 @@ void Alien::Shoot (Vec2 target) {
         return;
     // Escolher minion mais próximo. Começamos com o primeiro.
     std::weak_ptr<GameObject> chosenMinion = minionArray[0];
-    Vec2 minionPos = chosenMinion.lock()->box.Center();
+    Vec2 minionPos = chosenMinion.lock()->box.GetCenter();
     float shortestDistance = minionPos.DistanceTo(target);
     for (int i = 1; i < (int) minionArray.size(); ++i) {
         std::weak_ptr<GameObject> candidate = minionArray[i];
-        Vec2 candidatePos = candidate.lock()->box.Center();
+        Vec2 candidatePos = candidate.lock()->box.GetCenter();
         float candidateDistance = candidatePos.DistanceTo(target);
         if (candidateDistance < shortestDistance) {
             chosenMinion = candidate;
