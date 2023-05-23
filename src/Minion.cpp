@@ -50,7 +50,8 @@ void Minion::Shoot (Vec2 pos) {
     Vec2 currentPos = associated.box.GetCenter();
     float angle = currentPos.AngleOfLineTo(pos);
     GameObject* bulletGo = new GameObject(1);
-    Bullet* bullet = new Bullet(*bulletGo, angle, 100, 1, 600, spriteFile);
+    Sprite* sprite = new Sprite(*bulletGo, spriteFile, 3, 0.2, true, true);
+    Bullet* bullet = new Bullet(*bulletGo, angle, 100, 1, 600, sprite);
     bulletGo->AddComponent(bullet);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(currentPos);
     Game::GetInstance().GetState().AddObject(bulletGo);

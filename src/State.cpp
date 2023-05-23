@@ -54,11 +54,11 @@ State::State() {
 	penguinGo->AddComponent(penguin);
 	penguinGo->box.x = 704;
 	penguinGo->box.y = 640;
-	std::weak_ptr<GameObject> cameraFocus = AddObject(penguinGo);
+	player = AddObject(penguinGo);
 
 	// Make camera follow penguin
-	Camera::Follow(penguinGo);
-	AddCameraFocus(cameraFocus);
+	Camera::Follow(player);
+	AddCameraFocus(player);
 }
 
 State::~State () {
@@ -83,10 +83,9 @@ void State::UpdateObjects (float dt) {
     //     (*it).get()->Update(dt);
     // }
 	for (auto it : objectArray) {
-		if (cameraFocus.expired() == false && it.get() == cameraFocus.lock().get()) {
-			continue;
+		if (cameraFocus.expired() || it.get() != cameraFocus.lock().get()) {
+			it->Update(dt);
 		}
-		it->Update(dt);
 	}
 }
 
@@ -132,6 +131,9 @@ void State::Update (float dt) {
 	camera.Update(dt);
     UpdateObjects(dt);
 	EraseObjects();
+
+
+	// PrintDebugInfo();
 }
 
 void State::Render () {
@@ -151,8 +153,18 @@ bool State::QuitRequested () {
 }
 
 void State::Input() {
-	// InputManager& inputM = InputManager::GetInstance();
-	// Camera camera;
+	InputManager& inputM = InputManager::GetInstance();
+	Camera camera;
+
+	if (inputM.KeyPress(SDLK_c)) {
+		if (cameraFocus.expired()) {
+			camera.Follow(player);
+			AddCameraFocus(player);
+		} else {
+			camera.Unfollow();
+		}
+	}
+
 	// if (inputM.KeyPress(SDLK_SPACE)) {
 	// 	Vec2 objPos = Vec2( 200, 0 ).GetRotated( -PI + PI*(rand() % 1001)/500.0 ) + Vec2(inputM.GetMouseX() + camera.pos.x, inputM.GetMouseY() + camera.pos.y);
 	// 	AddObject((int)objPos.x, (int)objPos.y);
@@ -225,4 +237,12 @@ void State::AddCameraFocus (std::weak_ptr<GameObject> object) {
 
 void State::RemoveCameraFocus () {
 	cameraFocus.reset();
+}
+
+void State::PrintDebugInfo () {
+	Rect box = cannon.lock()->box;
+	Camera camera;
+    system("cls");
+    printf("penguin (pixel): %f, %f\n",  (box.x - camera.pos.x), (box.y - camera.pos.y));
+    fflush(stdout);
 }

@@ -45,9 +45,10 @@ bool PenguinCannon::Is (std::string type) {
 
 void PenguinCannon::Shoot () {
     Vec2 bulletSpawnPos = associated.box.GetCenter() + Vec2(50,0).GetRotated(angle);
-    std::string bulletSprite = "img/minionbullet2.png";
+    std::string spriteFile = "img/penguinbullet.png";
     GameObject* bulletGo = new GameObject(1);
-    Bullet* bullet = new Bullet(*bulletGo, angle, 200, 1, 800, bulletSprite);
+    Sprite* sprite = new Sprite(*bulletGo, spriteFile, 4, 0.2, true, false, 1);
+    Bullet* bullet = new Bullet(*bulletGo, angle, 200, 1, 800, sprite);
     bulletGo->AddComponent(bullet);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(bulletSpawnPos);
     Game::GetInstance().GetState().AddObject(bulletGo);

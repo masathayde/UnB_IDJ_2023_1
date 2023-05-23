@@ -1,9 +1,7 @@
 #include "Bullet.h"
-#include "Sprite.h"
 #define DEGRADRATIO 180.0/3.141592653589793238463
 
-Bullet::Bullet (GameObject& go, float angle, float iSpeed, int iDamage, float maxDistance, std::string spriteFile) : Component (go) {
-    Sprite* sprite = new Sprite(go, spriteFile, 3, 0.2);
+Bullet::Bullet (GameObject& go, float angle, float iSpeed, int iDamage, float maxDistance, Sprite* sprite) : Component (go) {
     sprite->SetScaleX(2,2);
     associated.AddComponent(sprite);
     speed = Vec2(iSpeed, 0).GetRotated(angle);

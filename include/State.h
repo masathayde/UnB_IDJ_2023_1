@@ -23,6 +23,7 @@ class State {
     void Input ();
     void UpdateObjects (float dt);
     void EraseObjects ();
+    void PrintDebugInfo ();
 
  public:
     State();
@@ -36,6 +37,9 @@ class State {
     std::weak_ptr<GameObject> GetObjectPtr (GameObject* go);
     void AddCameraFocus (std::weak_ptr<GameObject> object);
     void RemoveCameraFocus ();
+
+    std::weak_ptr<GameObject> player;
+    std::weak_ptr<GameObject> cannon;
 
 };
 

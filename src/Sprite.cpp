@@ -3,15 +3,21 @@
 #include "Resources.h"
 #include "Camera.h"
 #include "RenderQueue.h"
+#include <cmath>
 
 Sprite::Sprite (GameObject& associated) : Component(associated) {
     texture = nullptr;
 }
 
-Sprite::Sprite (GameObject& associated, std::string file, int iFrameCount, float iFrameTime) : Component(associated) {
+Sprite::Sprite (GameObject& associated, std::string file, int iFrameCount, float iFrameTime,
+bool animated, bool infinite, float iMaxAnimationLoops) : Component(associated) {
+
     texture = nullptr;
     frameCount = iFrameCount;
     frameTime = iFrameTime;
+    isAnimated = animated;
+    animationIsInfinite = infinite;
+    maxAnimationLoops = iMaxAnimationLoops;
     Open(file);
 }
 
@@ -44,8 +50,8 @@ void Sprite::Render () {
 void Sprite::Render (float x, float y, float z) {
     SDL_Rect dstRect;
     Camera camera;
-    dstRect.x = x - camera.pos.x;
-    dstRect.y = y - camera.pos.y;
+    dstRect.x = round(x - camera.pos.x);
+    dstRect.y = round(y - camera.pos.y);
     dstRect.w = clipRect.w * scale.x;
     dstRect.h = clipRect.h * scale.y;
     // int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
@@ -74,9 +80,22 @@ bool Sprite::Is (std::string type) {
 }
 
 void Sprite::Update (float dt) {
+
     float totalTime = (float) frameCount * frameTime;
-    timeElapsed = SDL_fmod(timeElapsed + dt, totalTime);
-    currentFrame = (int) SDL_floor(timeElapsed / frameTime);
+    timeElapsed = timeElapsed + dt;
+    float animationLoops = (timeElapsed/totalTime);
+
+    if (!isAnimated || (!animationIsInfinite && animationLoops >= maxAnimationLoops)) {
+        return;
+    } 
+
+    timeElapsed = SDL_fmod(timeElapsed, totalTime);
+
+    if (!animationIsInfinite && animationLoops >= maxAnimationLoops) {
+        currentFrame = frameCount - 1; // Last frame
+    } else {
+        currentFrame = (int) SDL_floor(timeElapsed / frameTime);
+    }
     SetClip(width*currentFrame, 0, width, height);
 }
 

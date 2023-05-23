@@ -2,6 +2,7 @@
 #define BULLET_H_
 #include "Component.h"
 #include "Vec2.h"
+#include "Sprite.h"
 
 class Bullet : public Component {
 
@@ -10,7 +11,7 @@ class Bullet : public Component {
     int damage;
 
  public:
-    Bullet (GameObject& associated, float angle, float speed, int damage, float maxDistance, std::string sprite);
+    Bullet (GameObject& associated, float angle, float speed, int damage, float maxDistance, Sprite* sprite);
     void Update (float dt);
     void Render ();
     bool Is (std::string type);

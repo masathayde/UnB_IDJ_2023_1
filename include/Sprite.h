@@ -18,14 +18,17 @@ class Sprite : public Component {
     int height;
     SDL_Rect clipRect;
     Vec2 scale {Vec2(1,1)};
-    int frameCount {1};
-    float frameTime {1.0};
+    int frameCount;
+    float frameTime;
     int currentFrame {0};
     float timeElapsed {0.0};
+    float maxAnimationLoops;
+    bool isAnimated;
+    bool animationIsInfinite;
 
  public:
     Sprite (GameObject& associated);
-    Sprite (GameObject& associated, std::string file, int frameCount = 1, float frameTime = 1.0);
+    Sprite (GameObject& associated, std::string file, int frameCount = 1, float frameTime = 1.0, bool isAnimated = false, bool isInfinite = false, float maxAnimationLoops = 1);
     ~Sprite();
     void Open (std::string file);
     void SetClip (int x, int y, int w, int h);

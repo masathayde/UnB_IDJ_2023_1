@@ -26,6 +26,7 @@ void PenguinBody::Start () {
     Vec2 bodyCenter = associated.box.GetCenter();
     cannonGO->box = cannonGO->box.TopLeftCornerIfCenterIs(bodyCenter);
     pcannon = Game::GetInstance().GetState().AddObject(cannonGO);
+    Game::GetInstance().GetState().cannon = pcannon;
 }
 
 void PenguinBody::Update (float dt) {
@@ -52,12 +53,15 @@ void PenguinBody::Update (float dt) {
     currentPos = currentPos + speedVec.GetRotated(angle) * dt;
     associated.box = associated.box.TopLeftCornerIfCenterIs(currentPos);
     // Atualizando posição do canhão.
-    pcannon.lock()->box = pcannon.lock()->box.TopLeftCornerIfCenterIs(currentPos);
+    if (pcannon.expired() == false) {
+        pcannon.lock()->box = pcannon.lock()->box.TopLeftCornerIfCenterIs(currentPos);
+        // Hack para consertar tremida
+        pcannon.lock()->box.x -= 0.2;
+    }
 
     if (hp <= 0) {
         associated.RequestDelete();
     }
-
 }
 
 void PenguinBody::Render () {

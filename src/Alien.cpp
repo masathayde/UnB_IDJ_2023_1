@@ -73,7 +73,7 @@ void Alien::Update (float dt) {
                 break;
 
             case Action::SHOOT:
-                //Shoot(nextAction.pos);
+                Shoot(nextAction.pos);
                 taskQueue.pop();
                 break;
 
