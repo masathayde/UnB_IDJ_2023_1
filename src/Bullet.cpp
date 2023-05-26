@@ -3,7 +3,6 @@
 #define DEGRADRATIO 180.0/3.141592653589793238463
 
 Bullet::Bullet (GameObject& go, float angle, float iSpeed, int iDamage, float maxDistance, Sprite* sprite, bool iTargetsPlayer) : Component (go) {
-    sprite->SetScaleX(2,2);
     associated.AddComponent(sprite);
     speed = Vec2(iSpeed, 0).GetRotated(angle);
     damage = iDamage;
@@ -14,6 +13,7 @@ Bullet::Bullet (GameObject& go, float angle, float iSpeed, int iDamage, float ma
     associated.box.w = sprite->GetWidth();
 
     Collider* collider = new Collider(go);
+    associated.AddComponent(this);
     associated.AddComponent(collider);
 }
 

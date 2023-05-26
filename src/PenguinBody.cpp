@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Collider.h"
 #include "Bullet.h"
+#include "Sound.h"
 #define DEGRADRATIO 180.0/3.141592653589793238463
 
 PenguinBody* PenguinBody::player = nullptr;
@@ -16,6 +17,7 @@ PenguinBody::PenguinBody (GameObject& go) : Component (go) {
     associated.AddComponent(sprite);
     Collider* collider = new Collider(go);
     associated.AddComponent(collider);
+    hp = 3;
 }
 
 PenguinBody::~PenguinBody () {
@@ -65,6 +67,15 @@ void PenguinBody::Update (float dt) {
     }
 
     if (hp <= 0) {
+        std::string file = "img/penguindeath.png";
+        GameObject* deathGo = new GameObject(associated.z);
+        deathGo->box = associated.box;
+        Sprite* deathSprite = new Sprite(*deathGo, file, 5, 0.2, true, false, 1.0, 0.4);
+        Sound* deathSound = new Sound(*deathGo, "audio/boom.wav");
+        deathSound->Play();
+        deathGo->AddComponent(deathSprite);
+        deathGo->AddComponent(deathSound);
+        Game::GetInstance().GetState().AddObject(deathGo);
         associated.RequestDelete();
     }
 }
@@ -82,4 +93,8 @@ void PenguinBody::NotifyCollision (GameObject& other) {
     if (bullet != nullptr && bullet->targetsPlayer) {
         this->hp -= bullet->GetDamage();
     }
+}
+
+Rect PenguinBody::GetPos () {
+    return associated.box;
 }

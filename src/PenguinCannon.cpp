@@ -15,6 +15,7 @@ PenguinCannon::PenguinCannon (GameObject& go, std::weak_ptr<GameObject> penguinB
     associated.AddComponent(sprite);
     Collider* collider = new Collider(go);
     associated.AddComponent(collider);
+    shotCooldown.Update(cooldownTime);
 }
 
 
@@ -33,6 +34,7 @@ void PenguinCannon::Update (float dt) {
     angle = pBodyCenter.AngleOfLineTo(mousePos);
     associated.angleDeg = angle * DEGRADRATIO;
 
+    shotCooldown.Update(dt);
     if (im.MousePress(LEFT_MOUSE_BUTTON)) {
         Shoot();
     }
@@ -47,12 +49,15 @@ bool PenguinCannon::Is (std::string type) {
 }
 
 void PenguinCannon::Shoot () {
+    if (shotCooldown.Get() < cooldownTime) {
+        return;
+    }
+    shotCooldown.Restart();
     Vec2 bulletSpawnPos = associated.box.GetCenter() + Vec2(50,0).GetRotated(angle);
     std::string spriteFile = "img/penguinbullet.png";
     GameObject* bulletGo = new GameObject(1);
     Sprite* sprite = new Sprite(*bulletGo, spriteFile, 4, 0.2, true, false, 1);
-    Bullet* bullet = new Bullet(*bulletGo, angle, 200, 1, 800, sprite, false);
-    bulletGo->AddComponent(bullet);
+    new Bullet(*bulletGo, angle, 250, 1, 800, sprite, false);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(bulletSpawnPos);
     Game::GetInstance().GetState().AddObject(bulletGo);
 }

@@ -8,7 +8,7 @@ class PenguinBody : public Component {
     Vec2 speed {Vec2(0,0)};
     float linearSpeed {0};
     float angle {0};
-    int hp {1};
+    int hp;
     float maxSpeed {400};
     float minSpeed {-400};
     float accel {25};
@@ -22,6 +22,7 @@ class PenguinBody : public Component {
     bool Is (std::string type);
     void NotifyCollision (GameObject& other);
     static PenguinBody* player;
+    Rect GetPos ();
 };
 
 #endif

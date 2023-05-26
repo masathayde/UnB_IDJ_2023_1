@@ -10,7 +10,7 @@ Sprite::Sprite (GameObject& associated) : Component(associated) {
 }
 
 Sprite::Sprite (GameObject& associated, std::string file, int iFrameCount, float iFrameTime,
-bool animated, bool infinite, float iMaxAnimationLoops) : Component(associated) {
+bool animated, bool infinite, float iMaxAnimationLoops, float iSecondsToDie) : Component(associated) {
 
     texture = nullptr;
     frameCount = iFrameCount;
@@ -18,6 +18,7 @@ bool animated, bool infinite, float iMaxAnimationLoops) : Component(associated) 
     isAnimated = animated;
     animationIsInfinite = infinite;
     maxAnimationLoops = iMaxAnimationLoops;
+    secondsToSelfDestruct = iSecondsToDie;
     Open(file);
 }
 
@@ -97,6 +98,11 @@ void Sprite::Update (float dt) {
         currentFrame = (int) SDL_floor(timeElapsed / frameTime);
     }
     SetClip(width*currentFrame, 0, width, height);
+
+    selfDestructCount.Update(dt);
+    if (secondsToSelfDestruct > 0 && selfDestructCount.Get() >= secondsToSelfDestruct) {
+        associated.RequestDelete();
+    }
 }
 
 void Sprite::SetScaleX (float scaleX, float scaleY) {

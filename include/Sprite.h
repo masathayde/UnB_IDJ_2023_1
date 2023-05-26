@@ -7,6 +7,7 @@
 #include "SDL_include.h"
 #include "Component.h"
 #include "GameObject.h"
+#include "Timer.h"
 
 // TODO: Setar largura e altura do box do GameObject baseado no carregado pela
 // Sprite em seu construtor.
@@ -25,10 +26,12 @@ class Sprite : public Component {
     float maxAnimationLoops;
     bool isAnimated;
     bool animationIsInfinite;
+    Timer selfDestructCount;
+    float secondsToSelfDestruct;
 
  public:
     Sprite (GameObject& associated);
-    Sprite (GameObject& associated, std::string file, int frameCount = 1, float frameTime = 1.0, bool isAnimated = false, bool isInfinite = false, float maxAnimationLoops = 1);
+    Sprite (GameObject& associated, std::string file, int frameCount = 1, float frameTime = 1.0, bool isAnimated = false, bool isInfinite = false, float maxAnimationLoops = 1, float secondsToSelfDestruct = 0);
     ~Sprite();
     void Open (std::string file);
     void SetClip (int x, int y, int w, int h);
