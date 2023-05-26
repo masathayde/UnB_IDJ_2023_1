@@ -9,7 +9,10 @@
 #include "RenderQueue.h"
 #include "Alien.h"
 #include "PenguinBody.h"
+#include "Collider.h"
+#include "Collision.h"
 #define PI 3.1416
+#define RADDEGRATIO 3.141592653589793238463/180
 
 State::State() {
     quitRequested = false;
@@ -42,16 +45,14 @@ State::State() {
 
 	// Alien
 	GameObject* alienGo = new GameObject(1);
-	Alien* alien = new Alien(*alienGo, 0);
+	new Alien(*alienGo, 0);
 	alienGo->box.x = 512;
 	alienGo->box.y = 300;
-	alienGo->AddComponent(alien);
 	AddObject(alienGo);
 
 	// Player penguin
 	GameObject* penguinGo = new GameObject(1);
-	PenguinBody* penguin = new PenguinBody(*penguinGo);
-	penguinGo->AddComponent(penguin);
+	new PenguinBody(*penguinGo);
 	penguinGo->box.x = 704;
 	penguinGo->box.y = 640;
 	player = AddObject(penguinGo);
@@ -117,6 +118,32 @@ void State::EraseObjects () {
 
 }
 
+void State::CheckCollision () {
+	for (std::list<std::shared_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
+		Collider* colliderA = (Collider*) it->get()->GetComponent("Collider");
+		if (colliderA != nullptr) {
+			std::list<std::shared_ptr<GameObject>>::iterator jt = it;
+			++jt;
+			for (; jt != objectArray.end(); ++jt) {
+				Collider* colliderB = (Collider*) jt->get()->GetComponent("Collider");
+				if (colliderB != nullptr) {
+					float angleA = it->get()->angleDeg * RADDEGRATIO;
+					float angleB = jt->get()->angleDeg * RADDEGRATIO;
+					Rect boxA = colliderA->box;
+					Rect boxB = colliderB->box;
+					bool haveCollided = Collision::IsColliding (boxA, boxB, angleA, angleB);
+					if (haveCollided) {
+						GameObject& objA = *(it->get());
+						GameObject& objB = *(jt->get());
+						it->get()->NotifyCollision(objB);
+						jt->get()->NotifyCollision(objA);
+					}
+				}
+			}
+		}
+	}
+}
+
 void State::Update (float dt) {
 	InputManager& inputM = InputManager::GetInstance();
 	if (inputM.QuitRequested() || inputM.KeyPress(SDLK_ESCAPE))
@@ -130,8 +157,8 @@ void State::Update (float dt) {
 	}
 	camera.Update(dt);
     UpdateObjects(dt);
+	CheckCollision();
 	EraseObjects();
-
 
 	// PrintDebugInfo();
 }
@@ -240,9 +267,14 @@ void State::RemoveCameraFocus () {
 }
 
 void State::PrintDebugInfo () {
-	Rect box = cannon.lock()->box;
-	Camera camera;
-    system("cls");
-    printf("penguin (pixel): %f, %f\n",  (box.x - camera.pos.x), (box.y - camera.pos.y));
-    fflush(stdout);
+	if (!player.expired()) {
+		Rect box = player.lock()->box;
+		Collider* collider = (Collider*) player.lock()->GetComponent("Collider");
+		Rect boxColl = collider->box;
+		Camera camera;
+		system("cls");
+		printf("penguin (go): %f, %f\n",  (box.x - camera.pos.x), (box.y - camera.pos.y));
+		printf("penguin (collision): %f, %f\n",  (boxColl.x - camera.pos.x), (boxColl.y - camera.pos.y));
+		fflush(stdout);
+	}
 }

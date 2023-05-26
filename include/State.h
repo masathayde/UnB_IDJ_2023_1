@@ -23,6 +23,8 @@ class State {
     void Input ();
     void UpdateObjects (float dt);
     void EraseObjects ();
+    void CheckCollision ();
+
     void PrintDebugInfo ();
 
  public:

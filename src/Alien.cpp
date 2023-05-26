@@ -4,11 +4,16 @@
 #include "Camera.h"
 #include "Game.h"
 #include "Minion.h"
+#include "Collider.h"
+#include "Bullet.h"
 #include <cmath>
 
 Alien::Alien (GameObject& go, int i_nMinions) : Component(go) {
+    associated.AddComponent(this);
     Sprite* sprite = new Sprite(go, "img/alien.png");
     associated.AddComponent(sprite);
+    Collider* collider = new Collider(go);
+    associated.AddComponent(collider);
     hp = 1;
 }
 
@@ -24,8 +29,7 @@ void Alien::Start () {
         GameObject* minionGO = new GameObject(1);
         std::weak_ptr<GameObject> alienGoPTR;
         alienGoPTR = Game::GetInstance().GetState().GetObjectPtr(&associated);
-        Minion* minionCPT = new Minion(*minionGO, alienGoPTR, arcOffset);
-        minionGO->AddComponent(minionCPT);
+        new Minion(*minionGO, alienGoPTR, arcOffset);
         Game::GetInstance().GetState().AddObject(minionGO);
         std::weak_ptr<GameObject> minionPtr = Game::GetInstance().GetState().GetObjectPtr(minionGO);
         minionArray.push_back(minionPtr);
@@ -122,4 +126,11 @@ void Alien::Shoot (Vec2 target) {
     }
     Minion* minion = (Minion*) chosenMinion.lock()->GetComponent("Minion");
     minion->Shoot(target);
+}
+
+void Alien::NotifyCollision (GameObject& other) {
+    Bullet* bullet = (Bullet*) other.GetComponent("Bullet");
+    if (bullet != nullptr && !bullet->targetsPlayer) {
+        this->hp -= bullet->GetDamage();
+    }
 }

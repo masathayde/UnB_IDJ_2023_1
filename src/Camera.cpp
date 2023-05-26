@@ -21,7 +21,7 @@ void Camera::Unfollow () {
 void Camera::Update (float dt) {
     // Checar inputs
     if (focus.expired()) {
-
+        Game::GetInstance().GetState().RemoveCameraFocus();
         InputManager& im = InputManager::GetInstance();
 
         if (im.IsKeyDown(RIGHT_ARROW_KEY)) {
@@ -50,6 +50,7 @@ void Camera::Update (float dt) {
         int width, height;
         SDL_GetRendererOutputSize(renderer, &width, &height);
         Vec2 focusPos = focus.lock()->box.GetCenter();
+        focusPos.y -= 0.1; // hack to fix jittering sprite
         float widthF = width/2;
         float heightF = height/2;
         pos = focusPos - Vec2(widthF, heightF);

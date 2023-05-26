@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Bullet.h"
 #include "Game.h"
+#include "Collider.h"
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
@@ -12,6 +13,8 @@ PenguinCannon::PenguinCannon (GameObject& go, std::weak_ptr<GameObject> penguinB
     pbody = penguinBody;
     Sprite* sprite = new Sprite(associated, "img/cubngun.png");
     associated.AddComponent(sprite);
+    Collider* collider = new Collider(go);
+    associated.AddComponent(collider);
 }
 
 
@@ -48,7 +51,7 @@ void PenguinCannon::Shoot () {
     std::string spriteFile = "img/penguinbullet.png";
     GameObject* bulletGo = new GameObject(1);
     Sprite* sprite = new Sprite(*bulletGo, spriteFile, 4, 0.2, true, false, 1);
-    Bullet* bullet = new Bullet(*bulletGo, angle, 200, 1, 800, sprite);
+    Bullet* bullet = new Bullet(*bulletGo, angle, 200, 1, 800, sprite, false);
     bulletGo->AddComponent(bullet);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(bulletSpawnPos);
     Game::GetInstance().GetState().AddObject(bulletGo);

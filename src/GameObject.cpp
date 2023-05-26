@@ -60,3 +60,9 @@ void GameObject::Start () {
     }
     started = true;
 }
+
+void GameObject::NotifyCollision (GameObject& other) {
+    for (auto& it : components) {
+        it->NotifyCollision(other);
+    }
+}

@@ -3,14 +3,19 @@
 #include "Game.h"
 #include "InputManager.h"
 #include "Camera.h"
+#include "Collider.h"
+#include "Bullet.h"
 #define DEGRADRATIO 180.0/3.141592653589793238463
 
 PenguinBody* PenguinBody::player = nullptr;
 
 PenguinBody::PenguinBody (GameObject& go) : Component (go) {
     player = this;
+    associated.AddComponent(this);
     Sprite* sprite = new Sprite(associated, "img/penguin.png");
     associated.AddComponent(sprite);
+    Collider* collider = new Collider(go);
+    associated.AddComponent(collider);
 }
 
 PenguinBody::~PenguinBody () {
@@ -70,4 +75,11 @@ void PenguinBody::Render () {
 
 bool PenguinBody::Is (std::string type) {
     return type == "PenguinBody";
+}
+
+void PenguinBody::NotifyCollision (GameObject& other) {
+    Bullet* bullet = (Bullet*) other.GetComponent("Bullet");
+    if (bullet != nullptr && bullet->targetsPlayer) {
+        this->hp -= bullet->GetDamage();
+    }
 }

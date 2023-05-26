@@ -11,11 +11,13 @@ class Bullet : public Component {
     int damage;
 
  public:
-    Bullet (GameObject& associated, float angle, float speed, int damage, float maxDistance, Sprite* sprite);
+    Bullet (GameObject& associated, float angle, float speed, int damage, float maxDistance, Sprite* sprite, bool targetsPlayer = {true});
     void Update (float dt);
     void Render ();
     bool Is (std::string type);
     int GetDamage ();
+    void NotifyCollision (GameObject& other);
+    bool targetsPlayer;
 };
 
 #endif

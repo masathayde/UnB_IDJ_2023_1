@@ -2,11 +2,13 @@
 #include "Sprite.h"
 #include "Bullet.h"
 #include "Game.h"
+#include "Collider.h"
 #include <cmath>
 #define PI 3.1416
 #define DEGRADRATIO 180.0/3.141592653589793238463
 
 Minion::Minion (GameObject& go, std::weak_ptr<GameObject> iAlienCenter, float arcOffSetDeg) : Component (go) {
+    associated.AddComponent(this);
     if (!iAlienCenter.expired()) {
         alienCenter = iAlienCenter;
     }
@@ -20,6 +22,9 @@ Minion::Minion (GameObject& go, std::weak_ptr<GameObject> iAlienCenter, float ar
     associated.box.w = sprite->GetWidth();
     associated.box.h = sprite->GetHeight();
     associated.angleDeg = arc * DEGRADRATIO;
+
+    Collider* collider = new Collider(go);
+    associated.AddComponent(collider);
 }
 
 void Minion::Update (float dt) {
@@ -29,7 +34,7 @@ void Minion::Update (float dt) {
         return;
     }
 
-    float angularSpeed = PI/3;
+    float angularSpeed = PI/2.5;
     Vec2 distanceFromAlien(200, 0);
     arc = fmod(arc + angularSpeed * dt, 2 * PI);
     associated.angleDeg = arc * DEGRADRATIO;
