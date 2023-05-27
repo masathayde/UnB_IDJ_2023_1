@@ -1,7 +1,7 @@
 #ifndef GAME_H_
 #define GAME_H_
-#include <iostream>
 #include <string>
+#include <stack>
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
@@ -13,7 +13,8 @@ class Game {
     static Game* instance;
     SDL_Window* window;
     SDL_Renderer* renderer;
-    State* state;
+    State* storedState {nullptr};
+    std::stack<std::unique_ptr<State>> stateStack;
     int frameStart {0};
     float dt {0};
     void CalculateDeltaTime ();
@@ -23,9 +24,10 @@ class Game {
     ~Game();
     void Run();
     SDL_Renderer* GetRenderer();
-    State& GetState();
+    State& GetCurrentState();
     static Game& GetInstance();
     float GetDeltaTime ();
+    void Push (State* state);
 };
 
 #endif

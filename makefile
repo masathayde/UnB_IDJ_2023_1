@@ -1,4 +1,4 @@
-COMPILER = g++
+COMPILER = g++32
 RMDIR = rm -rdf
 RM = rm -f
 

@@ -59,5 +59,5 @@ void PenguinCannon::Shoot () {
     Sprite* sprite = new Sprite(*bulletGo, spriteFile, 4, 0.2, true, false, 1);
     new Bullet(*bulletGo, angle, 250, 1, 800, sprite, false);
     bulletGo->box = bulletGo->box.TopLeftCornerIfCenterIs(bulletSpawnPos);
-    Game::GetInstance().GetState().AddObject(bulletGo);
+    Game::GetInstance().GetCurrentState().AddObject(bulletGo);
 }

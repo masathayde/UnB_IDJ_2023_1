@@ -24,7 +24,8 @@ void Collider::Update (float dt) {
 
 void Collider::Render () {
 #ifdef DEBUG
-	RenderQueue::GetInstance().QueueCollisionBoxRender(box, associated.angleDeg/(180/PI));
+	// RenderQueue::GetInstance().QueueCollisionBoxRender(box, associated.angleDeg/(180/PI));
+	
 	// Vec2 center( box.GetCenter() );
 	// SDL_Point points[5];
 

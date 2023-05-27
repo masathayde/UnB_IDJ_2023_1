@@ -27,13 +27,12 @@ PenguinBody::~PenguinBody () {
 
 void PenguinBody::Start () {
     GameObject* cannonGO = new GameObject(associated.z + 1);
-    std::weak_ptr<GameObject> pBodyPtr = Game::GetInstance().GetState().GetObjectPtr(&associated);
+    std::weak_ptr<GameObject> pBodyPtr = Game::GetInstance().GetCurrentState().GetObjectPtr(&associated);
     PenguinCannon* newCannon = new PenguinCannon (*cannonGO, pBodyPtr);
     cannonGO->AddComponent(newCannon);
     Vec2 bodyCenter = associated.box.GetCenter();
     cannonGO->box = cannonGO->box.TopLeftCornerIfCenterIs(bodyCenter);
-    pcannon = Game::GetInstance().GetState().AddObject(cannonGO);
-    Game::GetInstance().GetState().cannon = pcannon;
+    pcannon = Game::GetInstance().GetCurrentState().AddObject(cannonGO);
 }
 
 void PenguinBody::Update (float dt) {
@@ -75,7 +74,7 @@ void PenguinBody::Update (float dt) {
         deathSound->Play();
         deathGo->AddComponent(deathSprite);
         deathGo->AddComponent(deathSound);
-        Game::GetInstance().GetState().AddObject(deathGo);
+        Game::GetInstance().GetCurrentState().AddObject(deathGo);
         associated.RequestDelete();
     }
 }
