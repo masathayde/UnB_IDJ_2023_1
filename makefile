@@ -1,4 +1,4 @@
-COMPILER = ../TDM-GCC-32/bin/g++
+COMPILER = g++
 RMDIR = rm -rdf
 RM = rm -f
 
