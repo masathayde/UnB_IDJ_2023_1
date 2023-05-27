@@ -12,6 +12,7 @@ class Camera {
     static void Follow (std::weak_ptr<GameObject> newFocus);
     static void Unfollow ();
     static void Update (float dt);
+    static void Reset ();
 };
 
 #endif

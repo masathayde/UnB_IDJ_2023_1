@@ -60,7 +60,7 @@ void TileMap::RenderLayer (int layer, float cameraX, float cameraY) {
 
 void TileMap::Render () {
     Camera camera;
-    float parallaxFactor = 1;
+    float parallaxFactor = 0.2;
     for (int i = 0; i < mapDepth; ++i) {
         RenderLayer(i, camera.pos.x * (associated.z * parallaxFactor), camera.pos.y * (associated.z * parallaxFactor));
     }

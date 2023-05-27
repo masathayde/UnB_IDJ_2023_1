@@ -1,4 +1,5 @@
 #include "State.h"
+#include "RenderQueue.h"
 
 State::State() {
 }
@@ -31,6 +32,9 @@ void State::RenderArray () {
 	for (auto it: objectArray) {
 		it.get()->Render();
 	}
+	// Not actually rendering, just scheduling rendering jobs
+	RenderQueue& rq = RenderQueue::GetInstance();
+	rq.RenderJobs();
 }
 
 std::weak_ptr<GameObject> State::AddObject (GameObject* goptr) {

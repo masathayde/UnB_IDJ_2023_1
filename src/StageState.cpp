@@ -57,7 +57,7 @@ StageState::StageState () {
 	new PenguinBody(*penguinGo);
 	penguinGo->box.x = 704;
 	penguinGo->box.y = 640;
-    std::weak_ptr<GameObject> player = AddObject(penguinGo);
+    player = AddObject(penguinGo);
 
 	// Make camera follow penguin
 	Camera::Follow(player);
@@ -122,8 +122,13 @@ void StageState::CheckCollision () {
 
 void StageState::Update (float dt) {
 	InputManager& inputM = InputManager::GetInstance();
-	if (inputM.QuitRequested() || inputM.KeyPress(SDLK_ESCAPE))
+	if (inputM.QuitRequested()) {
 		quitRequested = true;
+	}
+
+	if (inputM.KeyPress(SDLK_ESCAPE)) {
+		popRequested = true;
+	}
 
 	Input();
 	Camera camera;
@@ -140,10 +145,7 @@ void StageState::Update (float dt) {
 }
 
 void StageState::Render () {
-	// Not actually rendering, just scheduling rendering jobs
 	RenderArray();
-	RenderQueue& rq = RenderQueue::GetInstance();
-	rq.RenderJobs();
 }
 
 void StageState::Input() {
@@ -152,9 +154,11 @@ void StageState::Input() {
 
 	if (inputM.KeyPress(SDLK_c)) {
 		if (cameraFocus.expired()) {
+			printf("lol\n");
 			camera.Follow(player);
 			AddCameraFocus(player);
 		} else {
+			RemoveCameraFocus();
 			camera.Unfollow();
 		}
 	}

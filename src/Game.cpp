@@ -61,6 +61,9 @@ Game::~Game () {
 }
 
 State& Game::GetCurrentState () {
+    if (stateStack.empty()) {
+        throw std::runtime_error ("Error: Calling GetCurrentState() when state stack is empty");
+    }
     return *stateStack.top();
 }
 
@@ -79,20 +82,22 @@ void Game::Run () {
     stateStack.emplace(storedState);
     storedState = nullptr;
     stateStack.top()->Start();
-    while (stateStack.top()->QuitRequested() == false && !stateStack.empty()) {
+    while (!stateStack.empty() && stateStack.top()->QuitRequested() == false) {
         if (stateStack.top()->PopRequested()) {
             stateStack.pop();
             if (!stateStack.empty()) {
                 stateStack.top()->Resume();
-            }
-            if (storedState != nullptr) {
-                stateStack.top()->Pause();
-                stateStack.emplace(storedState);
-                stateStack.top()->Start();
-                storedState = nullptr;
+            } else {
+                break;
             }
         }
-
+        if (storedState != nullptr) {
+            stateStack.top()->Pause();
+            stateStack.emplace(storedState);
+            stateStack.top()->Start();
+            storedState = nullptr;
+        }
+        
         CalculateDeltaTime();
         InputManager::GetInstance().Update();
         stateStack.top()->Update(dt);

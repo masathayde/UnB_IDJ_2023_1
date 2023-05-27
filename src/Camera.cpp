@@ -4,7 +4,6 @@
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
 #include "Game.h"
-#include "StageState.h"
 
 std::weak_ptr<GameObject> Camera::focus;
 Vec2 Camera::pos = Vec2(0, 0);
@@ -16,13 +15,11 @@ void Camera::Follow (std::weak_ptr<GameObject> newFocus) {
 
 void Camera::Unfollow () {
     focus.reset();
-    ((StageState&) Game::GetInstance().GetCurrentState()) .RemoveCameraFocus();
 }
 
 void Camera::Update (float dt) {
     // Checar inputs
     if (focus.expired()) {
-        ((StageState&) Game::GetInstance().GetCurrentState()).RemoveCameraFocus();
         InputManager& im = InputManager::GetInstance();
 
         if (im.IsKeyDown(RIGHT_ARROW_KEY)) {
@@ -56,4 +53,9 @@ void Camera::Update (float dt) {
         float heightF = height/2;
         pos = focusPos - Vec2(widthF, heightF);
     }
+}
+
+void Camera::Reset () {
+    pos = Vec2(0,0);
+    speed = Vec2(0,0);
 }
