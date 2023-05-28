@@ -4,10 +4,11 @@
 #define INCLUDE_SDL_MIXER
 #include "SDL_include.h"
 #include "Component.h"
+#include <memory>
 
 class Sound : public Component {
 
-    Mix_Chunk* chunk;
+    std::shared_ptr<Mix_Chunk> chunk;
     int channel;
 
  public:

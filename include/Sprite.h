@@ -8,13 +8,14 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "Timer.h"
+#include <memory>
 
 // TODO: Setar largura e altura do box do GameObject baseado no carregado pela
 // Sprite em seu construtor.
 
 class Sprite : public Component {
 
-    SDL_Texture* texture;
+    std::shared_ptr<SDL_Texture> texture;
     int width;
     int height;
     SDL_Rect clipRect;

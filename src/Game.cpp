@@ -85,6 +85,7 @@ void Game::Run () {
     while (!stateStack.empty() && stateStack.top()->QuitRequested() == false) {
         if (stateStack.top()->PopRequested()) {
             stateStack.pop();
+            Resources::ClearAll();
             if (!stateStack.empty()) {
                 stateStack.top()->Resume();
             } else {
@@ -105,9 +106,12 @@ void Game::Run () {
         SDL_RenderPresent(renderer);
         SDL_Delay(33);
     }
-    Resources::ClearImages();
-    Resources::ClearMusics();
-    Resources::ClearSounds();
+    
+    while (!stateStack.empty()) {
+        stateStack.pop();
+    }
+
+    Resources::ClearAll();
 }
 
 void Game::CalculateDeltaTime () {

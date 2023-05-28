@@ -2,13 +2,13 @@
 #include "Resources.h"
 #include "Game.h"
 
-std::unordered_map<std::string, SDL_Texture*> Resources::imageTable;
-std::unordered_map<std::string, Mix_Chunk*> Resources::soundTable;
-std::unordered_map<std::string, Mix_Music*> Resources::musicTable;
+std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
+std::unordered_map<std::string, std::shared_ptr<Mix_Chunk>> Resources::soundTable;
+std::unordered_map<std::string, std::shared_ptr<Mix_Music>> Resources::musicTable;
 
-SDL_Texture* Resources::GetImage (std::string file) {
+std::shared_ptr<SDL_Texture> Resources::GetImage (std::string file) {
 
-    std::unordered_map<std::string,SDL_Texture*>::iterator it;
+    std::unordered_map<std::string, std::shared_ptr<SDL_Texture>>::iterator it;
     it = imageTable.find(file);
     if (it != imageTable.end()) {
         return it->second;
@@ -19,13 +19,14 @@ SDL_Texture* Resources::GetImage (std::string file) {
             std::string errormsg(SDL_GetError());
             throw std::runtime_error("Error: IMG_LoadTexture failed.\nError message from SDL_GetError(): " + errormsg);
         }
-        imageTable.emplace(file, texture);
-        return texture;
+        std::shared_ptr<SDL_Texture> texturePtr (texture, [](SDL_Texture* p) {SDL_DestroyTexture(p);});
+        imageTable.insert(std::make_pair(file, texturePtr));
+        return texturePtr;
     }
 }
 
-Mix_Music* Resources::GetMusic (std::string file) {
-    std::unordered_map<std::string, Mix_Music*>::iterator it;
+std::shared_ptr<Mix_Music> Resources::GetMusic (std::string file) {
+    std::unordered_map<std::string, std::shared_ptr<Mix_Music>>::iterator it;
     it = musicTable.find(file);
     if (it != musicTable.end()) {
         return it->second;
@@ -35,13 +36,14 @@ Mix_Music* Resources::GetMusic (std::string file) {
             std::string errormsg(SDL_GetError());
             throw std::runtime_error("Error: Mix_LoadMUS failed.\nError message from SDL_GetError(): " + errormsg);
         }
-        musicTable.emplace(file, music);
-        return music;
+        std::shared_ptr<Mix_Music> musicPtr (music, [](Mix_Music* p) {Mix_FreeMusic(p);});
+        musicTable.emplace(std::make_pair(file, musicPtr));
+        return musicPtr;
     }
 }
 
-Mix_Chunk* Resources::GetSound (std::string file) {
-    std::unordered_map<std::string, Mix_Chunk*>::iterator it;
+std::shared_ptr<Mix_Chunk> Resources::GetSound (std::string file) {
+    std::unordered_map<std::string, std::shared_ptr<Mix_Chunk>>::iterator it;
     it = soundTable.find(file);
     if (it != soundTable.end()) {
         return it->second;
@@ -52,26 +54,51 @@ Mix_Chunk* Resources::GetSound (std::string file) {
             std::string errormsg(SDL_GetError());
             throw std::runtime_error("Error: Mix_LoadWAV failed.\nError message from SDL_GetError(): " + errormsg);
         }
-        soundTable.emplace(file, chunk);
-        return chunk;
+        std::shared_ptr<Mix_Chunk> chunkPtr (chunk, [](Mix_Chunk* p) {Mix_FreeChunk(p);});
+        soundTable.emplace(file, chunkPtr);
+        return chunkPtr;
     }
 }
 
 
 void Resources::ClearImages () {
+    std::vector<std::string> imagesToClear;
     for (auto it : imageTable) {
-        SDL_DestroyTexture(it.second);
+        if (it.second.unique()) {
+            imagesToClear.push_back(it.first);
+        }
+    }
+    for (auto name : imagesToClear) {
+        imageTable.erase(name);
     }
 }
 
 void Resources::ClearMusics () {
+    std::vector<std::string> musicsToClear;
     for (auto it : musicTable) {
-        Mix_FreeMusic(it.second);
+        if (it.second.unique()) {
+            musicsToClear.push_back(it.first);
+        }
+    }
+    for (auto name : musicsToClear) {
+        musicTable.erase(name);
     }
 }
 
 void Resources::ClearSounds () {
+    std::vector<std::string> soundsToClear;
     for (auto it : soundTable) {
-        Mix_FreeChunk(it.second);
+        if (it.second.unique()) {
+            soundsToClear.push_back(it.first);
+        }
     }
+    for (auto name : soundsToClear) {
+        soundTable.erase(name);
+    }
+}
+
+void Resources::ClearAll () {
+    ClearImages();
+    ClearMusics();
+    ClearSounds();
 }

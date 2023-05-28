@@ -3,23 +3,19 @@
 #include "Resources.h"
 
 Sound::Sound (GameObject& associated) : Component (associated) {
-    chunk = nullptr;
+    chunk.reset();
 }
 
 Sound::Sound (GameObject& associated, std::string file) : Component (associated) {
-    chunk = nullptr;
+    chunk.reset();
     Open(file);
 }
 
-// Se o destrutor chamar Mix_HaltChannel, o som para abruptamente.
 Sound::~Sound () {
-    // if (chunk != nullptr) {
-    //     Mix_HaltChannel(channel);
-    // }
 }
 
 void Sound::Play (int times) {
-    channel = Mix_PlayChannel(-1, chunk, times);
+    channel = Mix_PlayChannel(-1, chunk.get(), times);
 }
 
 void Sound::Stop () {

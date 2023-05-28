@@ -28,7 +28,7 @@ Sprite::~Sprite () {
 
 void Sprite::Open (std::string file) {
     texture = Resources::GetImage(file);
-    SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+    SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
     width = width / frameCount;
     SetClip(0, 0, width, height);
     associated.box.w = width;
@@ -56,7 +56,7 @@ void Sprite::Render (float x, float y, float z) {
     dstRect.w = clipRect.w * scale.x;
     dstRect.h = clipRect.h * scale.y;
     // int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
-    int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect, associated.angleDeg, nullptr, SDL_FLIP_NONE);
+    int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture.get(), &clipRect, &dstRect, associated.angleDeg, nullptr, SDL_FLIP_NONE);
     if (status != 0) {
         std::string errormsg(SDL_GetError());
         throw std::runtime_error("Error: SDL_RenderCopy failed with code " + std::to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
