@@ -2,6 +2,8 @@
 #include "Camera.h"
 #include "Game.h"
 #include <SDL2/SDL.h>
+#include <cmath>
+#include <iostream>
 
 RenderQueue::RenderQueue () {
 
@@ -16,7 +18,7 @@ RenderQueue& RenderQueue::GetInstance () {
     return rq;
 }
 
-void RenderQueue::QueueJob (Sprite* ptr, float x, float y, float z, int xOffset, int yOffset, int width, int height) {
+void RenderQueue::QueueJob (SDL_Texture* texture, float x, float y, float z, int xOffset, int yOffset, int width, int height, float angleDeg, Vec2 scale) {
     renderJob newJob;
     newJob.x = x;
     newJob.y = y;
@@ -25,7 +27,9 @@ void RenderQueue::QueueJob (Sprite* ptr, float x, float y, float z, int xOffset,
     newJob.y_offset = yOffset;
     newJob.tileWidth = width;
     newJob.tileHeight = height;
-    newJob.sprite = ptr;
+    newJob.scale = scale;
+    newJob.texture = texture;
+    newJob.angleDeg = angleDeg;
     jobQueue.push_back(newJob);
 }
 
@@ -33,12 +37,29 @@ void RenderQueue::RenderJobs () {
     // Ordenar por valor de z;
     timsort();
 
+    SDL_Rect dstRect;
+    SDL_Rect clipRect;
+    Camera camera;
     for (auto it : jobQueue) {
-        // printf("%f ", it.z);
-        it.sprite->SetClip(it.x_offset, it.y_offset, it.tileWidth, it.tileHeight);
-        it.sprite->Render(it.x, it.y, it.z);
+
+        // it.sprite->SetClip(it.x_offset, it.y_offset, it.tileWidth, it.tileHeight);
+        // it.sprite->Render(it.x, it.y, it.z);
+        clipRect.x = it.x_offset;
+        clipRect.y = it.y_offset;
+        clipRect.w = it.tileWidth;
+        clipRect.h = it.tileHeight;
+
+        dstRect.x = round(it.x - camera.pos.x);
+        dstRect.y = round(it.y - camera.pos.y);
+        dstRect.w = clipRect.w * it.scale.x;
+        dstRect.h = clipRect.h * it.scale.y;
+        int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), it.texture, &clipRect, &dstRect, it.angleDeg, nullptr, SDL_FLIP_NONE);
+        if (status != 0) {
+            std::string errormsg(SDL_GetError());
+            throw std::runtime_error("Error: SDL_RenderCopy failed with code " + std::to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
+        }
+        // status = SDL_RenderDrawRect(Game::GetInstance().GetRenderer(), &dstRect);
     }
-    // printf("\n\n");
     jobQueue.clear();
 
     #ifdef DEBUG

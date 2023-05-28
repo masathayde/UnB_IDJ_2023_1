@@ -1,7 +1,11 @@
 #ifndef RENDERQUEUE_H_
 #define RENDERQUEUE_H_
-#include "Sprite.h"
 #include <vector>
+#define INCLUDE_SDL_IMAGE
+#define INCLUDE_SDL_MIXER
+#include "SDL_include.h"
+#include "Vec2.h"
+#include "Rect.h"
 
 // Meyers Singleton
 class RenderQueue {
@@ -10,7 +14,7 @@ class RenderQueue {
     ~RenderQueue ();
 
     typedef struct {
-        Sprite* sprite;
+        SDL_Texture* texture;
         float x;
         float y;
         float z;
@@ -19,6 +23,8 @@ class RenderQueue {
         int y_offset;
         int tileWidth;
         int tileHeight;
+        Vec2 scale;
+        float angleDeg;
     } renderJob;
 
     typedef struct {
@@ -36,7 +42,7 @@ class RenderQueue {
 
  public:
     static RenderQueue& GetInstance ();
-    void QueueJob (Sprite* sprtPtr, float x, float y, float z, int xO, int yO, int w, int h);
+    void QueueJob (SDL_Texture* sprtPtr, float x, float y, float z, int xO, int yO, int w, int h, float angleDeg = 0, Vec2 scale = Vec2(1,1));
     void RenderJobs ();
     void QueueCollisionBoxRender (Rect box, float angle);
 };

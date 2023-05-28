@@ -27,8 +27,8 @@ Sprite::~Sprite () {
 }
 
 void Sprite::Open (std::string file) {
-    texture = Resources::GetImage(file);
-    SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
+    texture = Resources::GetImage(file).get();
+    SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
     width = width / frameCount;
     SetClip(0, 0, width, height);
     associated.box.w = width;
@@ -45,7 +45,7 @@ void Sprite::SetClip (int x, int y, int width, int height) {
 void Sprite::Render () {
     // Render(associated.box.x, associated.box.y);
     RenderQueue& rq = RenderQueue::GetInstance();
-    rq.QueueJob(this, associated.box.x, associated.box.y, associated.z, clipRect.x, clipRect.y, clipRect.w, clipRect.h);
+    rq.QueueJob(texture, associated.box.x, associated.box.y, associated.z, clipRect.x, clipRect.y, clipRect.w, clipRect.h, associated.angleDeg, scale);
 }
 
 void Sprite::Render (float x, float y, float z) {
@@ -56,7 +56,7 @@ void Sprite::Render (float x, float y, float z) {
     dstRect.w = clipRect.w * scale.x;
     dstRect.h = clipRect.h * scale.y;
     // int status = SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect);
-    int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture.get(), &clipRect, &dstRect, associated.angleDeg, nullptr, SDL_FLIP_NONE);
+    int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect, associated.angleDeg, nullptr, SDL_FLIP_NONE);
     if (status != 0) {
         std::string errormsg(SDL_GetError());
         throw std::runtime_error("Error: SDL_RenderCopy failed with code " + std::to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
@@ -127,4 +127,8 @@ void Sprite::SetFrameCount (int iFrameCount) {
 
 void Sprite::SetFrameTime (float iFrameTime) {
     frameTime = iFrameTime;
+}
+
+SDL_Texture* Sprite::GetTexture () {
+    return texture;
 }

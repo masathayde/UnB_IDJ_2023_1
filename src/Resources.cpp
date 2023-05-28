@@ -5,6 +5,7 @@
 std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> Resources::imageTable;
 std::unordered_map<std::string, std::shared_ptr<Mix_Chunk>> Resources::soundTable;
 std::unordered_map<std::string, std::shared_ptr<Mix_Music>> Resources::musicTable;
+std::unordered_map<std::string, std::shared_ptr<TTF_Font>> Resources::fontTable;
 
 std::shared_ptr<SDL_Texture> Resources::GetImage (std::string file) {
 
@@ -60,6 +61,24 @@ std::shared_ptr<Mix_Chunk> Resources::GetSound (std::string file) {
     }
 }
 
+std::shared_ptr<TTF_Font> Resources::GetFont (std::string file, int size) {
+    std::unordered_map<std::string, std::shared_ptr<TTF_Font>>::iterator it;
+    std::string key = file + std::to_string(size);
+    it = fontTable.find(key);
+    if (it != fontTable.end()) {
+        return it->second;
+    } else {
+        TTF_Font* font = TTF_OpenFont(file.c_str(), size);
+        if (font == nullptr) {
+            // Failed to Load Sound
+            std::string errormsg(SDL_GetError());
+            throw std::runtime_error("Error: TTF_OpenFont failed.\nError message from SDL_GetError(): " + errormsg);
+        }
+        std::shared_ptr<TTF_Font> fontPtr (font, [](TTF_Font* p) {TTF_CloseFont(p);});
+        fontTable.emplace(key, fontPtr);
+        return fontPtr;
+    }
+}
 
 void Resources::ClearImages () {
     std::vector<std::string> imagesToClear;
@@ -97,8 +116,21 @@ void Resources::ClearSounds () {
     }
 }
 
+void Resources::ClearFonts () {
+    std::vector<std::string> fontsToClear;
+    for (auto it : fontTable) {
+        if (it.second.unique()) {
+            fontsToClear.push_back(it.first);
+        }
+    }
+    for (auto name : fontsToClear) {
+        fontTable.erase(name);
+    }
+}
+
 void Resources::ClearAll () {
     ClearImages();
     ClearMusics();
+    ClearFonts();
     ClearSounds();
 }

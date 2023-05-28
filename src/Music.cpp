@@ -14,7 +14,7 @@ void Music::Play (int times) {
     if (music == nullptr) {
         throw std::runtime_error("Error: music pointer is null.");
     }
-    Mix_PlayMusic(music.get(), times);
+    Mix_PlayMusic(music, times);
 }
 
 void Music::Stop (int msToStop) {
@@ -22,7 +22,7 @@ void Music::Stop (int msToStop) {
 }
 
 void Music::Open (std::string file) {
-    music = Resources::GetMusic(file);
+    music = Resources::GetMusic(file).get();
 }
 
 bool Music::IsOpen() {

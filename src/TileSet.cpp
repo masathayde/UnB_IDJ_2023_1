@@ -20,7 +20,7 @@ void TileSet::RenderTile (unsigned index, float x, float y, float z) {
     // tileSet.SetClip(x_offset, y_offset, tileWidth, tileHeight);
     // tileSet.Render(x, y);
     RenderQueue& rq = RenderQueue::GetInstance();
-    rq.QueueJob(&tileSet, x, y, z, x_offset, y_offset, tileWidth, tileHeight);
+    rq.QueueJob(tileSet.GetTexture(), x, y, z, x_offset, y_offset, tileWidth, tileHeight);
 }
 
 int TileSet::GetTileHeight () {

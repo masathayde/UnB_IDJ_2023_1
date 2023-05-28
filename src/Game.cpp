@@ -32,14 +32,46 @@ Game::Game (string title, int width, int height) {
         throw std::runtime_error("Error: SDL_Init failed with code " + to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
     }
 
-    // TODO: Add error treatment later.
     status = IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF);
+    if (status == 0) {
+        string errormsg(SDL_GetError());
+        throw std::runtime_error("Error: IMG_Init failed with code " + to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
+    }
+
+    status = TTF_Init();
+    if (status == -1) {
+        string errormsg(TTF_GetError());
+        throw std::runtime_error("Error: TTF_Init failed with code " + to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
+    }
+
     status = Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
+    if (status == 0) {
+        string errormsg(SDL_GetError());
+        throw std::runtime_error("Error: Mix_Init failed with code " + to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
+    }
+
     status = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
+    if (status == -1) {
+        string errormsg(SDL_GetError());
+        throw std::runtime_error("Error: Mix_OpenAudio failed with code " + to_string(status) + "\nError message from SDL_GetError(): " + errormsg);
+    }
+    
     status = Mix_AllocateChannels(32);
+    if (status != 32) {
+        throw std::runtime_error("Error: Mix_AllocateChannels failed to allocated requested channels");
+    }
 
     window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
+    if (window == NULL) {
+        string errormsg(SDL_GetError());
+        throw std::runtime_error("Error: SDL_CreateWindow failed\nError message from SDL_GetError(): " + errormsg);
+    }
+    
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        string errormsg(SDL_GetError());
+        throw std::runtime_error("Error: SDL_CreateRenderer failed\nError message from SDL_GetError(): " + errormsg);
+    }
 }
 
 Game::~Game () {
@@ -57,6 +89,7 @@ Game::~Game () {
     Mix_CloseAudio();
     Mix_Quit();
     IMG_Quit();
+    TTF_Quit();
     SDL_Quit();
 }
 

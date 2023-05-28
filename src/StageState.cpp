@@ -90,6 +90,7 @@ void StageState::EraseObjects () {
 	for (std::list<std::shared_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
 		if (it->get()->IsDead()) {
 			objectArray.erase(it);
+			it--;
 		}
 	}
 }
