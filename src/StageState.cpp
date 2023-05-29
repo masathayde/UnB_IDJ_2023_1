@@ -10,6 +10,9 @@
 #include "PenguinBody.h"
 #include "Collider.h"
 #include "Collision.h"
+#include "EndState.h"
+#include "GameData.h"
+#include "Game.h"
 // #define INCLUDE_SDL_IMAGE
 // #define INCLUDE_SDL_MIXER
 // #include "SDL_include.h"
@@ -45,11 +48,41 @@ StageState::StageState () {
 	tileMapObject2->AddComponent(bgTileMap2);
 	AddObject(tileMapObject2);
 
-	// Alien
+	// Aliens
 	GameObject* alienGo = new GameObject(1);
 	new Alien(*alienGo, 0);
 	alienGo->box.x = 512;
 	alienGo->box.y = 300;
+	AddObject(alienGo);
+
+	alienGo = new GameObject(1);
+	new Alien(*alienGo, 0);
+	alienGo->box.x = 100;
+	alienGo->box.y = 300;
+	AddObject(alienGo);
+
+	alienGo = new GameObject(1);
+	new Alien(*alienGo, 0);
+	alienGo->box.x = 300;
+	alienGo->box.y = 300;
+	AddObject(alienGo);
+
+	alienGo = new GameObject(1);
+	new Alien(*alienGo, 0);
+	alienGo->box.x = 1400;
+	alienGo->box.y = 300;
+	AddObject(alienGo);
+
+	alienGo = new GameObject(1);
+	new Alien(*alienGo, 0);
+	alienGo->box.x = 1400;
+	alienGo->box.y = 500;
+	AddObject(alienGo);
+
+	alienGo = new GameObject(1);
+	new Alien(*alienGo, 0);
+	alienGo->box.x = 300;
+	alienGo->box.y = 1000;
 	AddObject(alienGo);
 
 	// Player penguin
@@ -89,8 +122,7 @@ void StageState::UpdateArray (float dt) {
 void StageState::EraseObjects () {
 	for (std::list<std::shared_ptr<GameObject>>::iterator it = objectArray.begin(); it != objectArray.end(); ++it) {
 		if (it->get()->IsDead()) {
-			objectArray.erase(it);
-			it--;
+			it = objectArray.erase(it);
 		}
 	}
 }
@@ -142,6 +174,19 @@ void StageState::Update (float dt) {
 	CheckCollision();
 	EraseObjects();
 
+	// Check victory conditions
+	if (player.expired()) {
+		popRequested = true;
+		GameData::playerVictory = false;
+		EndState* endState = new EndState();
+		Game::GetInstance().Push(endState);
+	} else if (Alien::alienCount == 0) {
+		popRequested = true;
+		GameData::playerVictory = true;
+		EndState* endState = new EndState();
+		Game::GetInstance().Push(endState);
+	}
+
 	// PrintDebugInfo();
 }
 
@@ -176,12 +221,9 @@ void StageState::RemoveCameraFocus () {
 void StageState::PrintDebugInfo () {
 	if (!player.expired()) {
 		Rect box = player.lock()->box;
-		Collider* collider = (Collider*) player.lock()->GetComponent("Collider");
-		Rect boxColl = collider->box;
 		Camera camera;
 		system("cls");
-		printf("penguin (go): %f, %f\n",  (box.x - camera.pos.x), (box.y - camera.pos.y));
-		printf("penguin (collision): %f, %f\n",  (boxColl.x - camera.pos.x), (boxColl.y - camera.pos.y));
+		printf("penguin (go): %f, %f\n",  (box.x), (box.y));
 		fflush(stdout);
 	}
 }

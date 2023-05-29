@@ -7,30 +7,30 @@
 class StageState : public State {
  protected:
 
-    Music music;
-    TileSet* bgTileSet;
-    std::weak_ptr<GameObject> cameraFocus;
-    std::weak_ptr<GameObject> player;
+   Music music;
+   TileSet* bgTileSet;
+   std::weak_ptr<GameObject> cameraFocus;
+   std::weak_ptr<GameObject> player;
 
-    void Input ();
-    void UpdateArray (float dt);
-    void EraseObjects ();
-    void CheckCollision ();
+   void Input ();
+   void UpdateArray (float dt);
+   void EraseObjects ();
+   void CheckCollision ();
 
-    void PrintDebugInfo ();
+   void PrintDebugInfo ();
 
  public:
-    StageState ();
-    ~StageState ();
-    void LoadAssets ();
-    void Update (float dt);
-    void Render ();
-    void Start ();
-    void Pause ();
-    void Resume ();
+   StageState ();
+   ~StageState ();
+   void LoadAssets ();
+   void Update (float dt);
+   void Render ();
+   void Start ();
+   void Pause ();
+   void Resume ();
 
-    void AddCameraFocus (std::weak_ptr<GameObject> object);
-    void RemoveCameraFocus ();
+   void AddCameraFocus (std::weak_ptr<GameObject> object);
+   void RemoveCameraFocus ();
 };
 
 #endif

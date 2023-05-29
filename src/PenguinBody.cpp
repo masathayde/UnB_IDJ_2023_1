@@ -57,10 +57,27 @@ void PenguinBody::Update (float dt) {
     Vec2 currentPos = associated.box.GetCenter();
     Vec2 speedVec(linearSpeed, 0);
     currentPos = currentPos + speedVec.GetRotated(angle) * dt;
+
+    // Boundary check
+    // Map is 1408w x 1280h
     associated.box = associated.box.TopLeftCornerIfCenterIs(currentPos);
+
+    if (associated.box.x < 0) {
+        associated.box.x = 0;
+    }
+    if (associated.box.x + associated.box.w > 1408) {
+        associated.box.x = 1408 - associated.box.w;
+    }
+    if (associated.box.y < 0) {
+        associated.box.y = 0;
+    }
+    if (associated.box.y + associated.box.h > 1280) {
+        associated.box.y = 1280 - associated.box.h;
+    }
+
     // Atualizando posição do canhão.
     if (pcannon.expired() == false) {
-        pcannon.lock()->box = pcannon.lock()->box.TopLeftCornerIfCenterIs(currentPos);
+        pcannon.lock()->box = pcannon.lock()->box.TopLeftCornerIfCenterIs(associated.box.GetCenter());
         // Hack para consertar tremida
         pcannon.lock()->box.x -= 0.2;
     }

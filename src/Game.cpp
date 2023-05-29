@@ -121,8 +121,12 @@ void Game::Run () {
             Resources::ClearAll();
             if (!stateStack.empty()) {
                 stateStack.top()->Resume();
-            } else {
+            } else if (storedState == nullptr) {
                 break;
+            } else {
+                stateStack.emplace(storedState);
+                stateStack.top()->Start();
+                storedState = nullptr;
             }
         }
         if (storedState != nullptr) {

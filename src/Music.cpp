@@ -14,7 +14,11 @@ void Music::Play (int times) {
     if (music == nullptr) {
         throw std::runtime_error("Error: music pointer is null.");
     }
-    Mix_PlayMusic(music, times);
+    int status = Mix_PlayMusic(music, times);
+    if (status == -1) {
+        std::string errormsg(SDL_GetError());
+        throw std::runtime_error("Error: Mix_PlayMusic failed\nError message from SDL_GetError(): " + errormsg);
+    }
 }
 
 void Music::Stop (int msToStop) {
@@ -30,5 +34,5 @@ bool Music::IsOpen() {
 }
 
 Music::~Music() {
-    Stop(0);
+    // Stop(100);
 }

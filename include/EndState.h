@@ -1,19 +1,22 @@
-#ifndef TITLESTATE_H_
-#define TITLESTATE_H_
+#ifndef ENDSTATE_H_
+#define ENDSTATE_H_
 #include "State.h"
-#include <memory>
+#include "Music.h"
 
-class TitleState : public State {
+class EndState : public State {
+
+    Music backgroundMusic;
     float textTimer {0.0};
     float textDisplayTime {0.7};
     bool textShowing {false};
-    std::weak_ptr<GameObject> titleTextGO;
+    GameObject* titleTextGO {nullptr};
 
     void EraseObjects ();
 
  public:
-    TitleState ();
-    ~TitleState ();
+    EndState ();
+    ~EndState ();
+
     void LoadAssets ();
     void Update (float dt);
     void Render ();

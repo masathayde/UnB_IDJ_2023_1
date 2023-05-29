@@ -18,6 +18,7 @@ class Alien : public Component {
     enum AlienState {MOVING, RESTING};
     AlienState state {RESTING};
     Timer restTimer;
+    float restTime;
     Vec2 destination;
 
     Vec2 speed;

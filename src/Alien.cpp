@@ -8,7 +8,6 @@
 #include "Bullet.h"
 #include "Sound.h"
 #include "PenguinBody.h"
-
 #include <cmath>
 
 int Alien::alienCount {0};
@@ -19,6 +18,7 @@ Alien::Alien (GameObject& go, int i_nMinions) : Component(go) {
     associated.AddComponent(sprite);
     Collider* collider = new Collider(go);
     associated.AddComponent(collider);
+    restTime = 0.5 + ((float) (rand() % 101))/100.0;;
     alienCount++;
 }
 
@@ -106,7 +106,6 @@ void Alien::AI (float dt) {
         return;
     }
 
-    float restTime = 1.0;
     float speed = 150;
     Vec2 currentPos = associated.box.GetCenter();
     float angle;
@@ -133,9 +132,9 @@ void Alien::AI (float dt) {
             } else {
                 currentPos = destination;
                 Shoot(PenguinBody::player->GetPos().GetCenter());
+                restTime = 0.5 + ((float) (rand() % 101))/100.0;
                 state = RESTING;
                 restTimer.Restart();
-
             }
             associated.box = associated.box.TopLeftCornerIfCenterIs(currentPos);
             break;
