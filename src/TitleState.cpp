@@ -57,8 +57,8 @@ void TitleState::LoadAssets () {
 
 }
 
-void TitleState::Render () {
-    RenderArray();
+void TitleState::Render (float alpha) {
+    RenderArray(alpha);
 }
 
 void TitleState::Start () {

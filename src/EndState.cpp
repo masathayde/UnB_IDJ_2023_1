@@ -65,8 +65,8 @@ void EndState::Update (float dt) {
     EraseObjects ();
 }
 
-void EndState::Render () {
-    RenderArray();
+void EndState::Render (float alpha) {
+    RenderArray(alpha);
 }
 
 void EndState::Start () {

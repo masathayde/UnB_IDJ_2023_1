@@ -45,7 +45,9 @@ void Sprite::SetClip (int x, int y, int width, int height) {
 void Sprite::Render () {
     // Render(associated.box.x, associated.box.y);
     RenderQueue& rq = RenderQueue::GetInstance();
-    rq.QueueJob(texture, associated.box.x, associated.box.y, associated.z, clipRect.x, clipRect.y, clipRect.w, clipRect.h, associated.angleDeg, scale);
+    rq.QueueJob(texture, associated.box.x, associated.box.y, associated.z,
+        clipRect.x, clipRect.y, clipRect.w, clipRect.h,
+        associated.previousBox.x, associated.previousBox.y, associated.previousAngleDeg, associated.angleDeg, scale);
 }
 
 void Sprite::Render (float x, float y, float z) {

@@ -18,11 +18,14 @@ RenderQueue& RenderQueue::GetInstance () {
     return rq;
 }
 
-void RenderQueue::QueueJob (SDL_Texture* texture, float x, float y, float z, int xOffset, int yOffset, int width, int height, float angleDeg, Vec2 scale) {
+void RenderQueue::QueueJob (SDL_Texture* texture, float x, float y, float z, int xOffset, int yOffset, int width, int height,
+float prevX, float prevY, float prevAngleDeg, float angleDeg, Vec2 scale) {
     renderJob newJob;
     newJob.x = x;
     newJob.y = y;
     newJob.z = z;
+    newJob.prevX = prevX;
+    newJob.prevY = prevY;
     newJob.x_offset = xOffset;
     newJob.y_offset = yOffset;
     newJob.tileWidth = width;
@@ -30,10 +33,11 @@ void RenderQueue::QueueJob (SDL_Texture* texture, float x, float y, float z, int
     newJob.scale = scale;
     newJob.texture = texture;
     newJob.angleDeg = angleDeg;
+    newJob.prevAngleDeg = prevAngleDeg;
     jobQueue.push_back(newJob);
 }
-
-void RenderQueue::RenderJobs () {
+// Alpha: interpolation factor
+void RenderQueue::RenderJobs (float alpha) {
     // Ordenar por valor de z;
     timsort();
 
@@ -42,15 +46,34 @@ void RenderQueue::RenderJobs () {
     Camera camera;
     for (auto it : jobQueue) {
 
-        // it.sprite->SetClip(it.x_offset, it.y_offset, it.tileWidth, it.tileHeight);
-        // it.sprite->Render(it.x, it.y, it.z);
+        float x = it.x;
+        float y = it.y;
+        float camX = camera.pos.x;
+        float camY = camera.pos.y;
+        // Interpolation
+        if (alpha != 1.0) {
+
+            if (alpha > 1.0) {
+                printf("alpha bigger than 1.0\n");
+            }
+            if (alpha < 0.0) {
+                printf("alpha lower than 0.0\n");
+            }
+
+            x = (alpha * x) + (1.0 - alpha) * it.prevX;
+            y = (alpha * y) + (1.0 - alpha) * it.prevY;
+            camX = (alpha * camX) + (1.0 - alpha) * camera.prevPos.x;
+            camY = (alpha * camY) + (1.0 - alpha) * camera.prevPos.y;
+
+        }
+
         clipRect.x = it.x_offset;
         clipRect.y = it.y_offset;
         clipRect.w = it.tileWidth;
         clipRect.h = it.tileHeight;
 
-        dstRect.x = round(it.x - camera.pos.x);
-        dstRect.y = round(it.y - camera.pos.y);
+        dstRect.x = round(x - camX);
+        dstRect.y = round(y - camY);
         dstRect.w = clipRect.w * it.scale.x;
         dstRect.h = clipRect.h * it.scale.y;
         int status = SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), it.texture, &clipRect, &dstRect, it.angleDeg, nullptr, SDL_FLIP_NONE);

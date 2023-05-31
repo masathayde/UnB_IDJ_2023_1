@@ -38,20 +38,21 @@ void PenguinBody::Start () {
 void PenguinBody::Update (float dt) {
     InputManager& im = InputManager::GetInstance();
 
-    float angularSpeed = 3.1416/25.0;
+    float angularSpeed = (3.1416/25.0)/0.033;
+    float angularDisplacement = angularSpeed * dt;
 
     if (im.IsKeyDown(SDLK_w)) {
-        linearSpeed += accel;
+        linearSpeed += (accel/0.033) * dt;
         linearSpeed = linearSpeed > maxSpeed ? maxSpeed : linearSpeed;
     } else if (im.IsKeyDown(SDLK_s)) {
-        linearSpeed -= accel;
+        linearSpeed -= (accel/0.033) * dt;
         linearSpeed = linearSpeed < minSpeed ? minSpeed : linearSpeed;
     }
 
     if (im.IsKeyDown(SDLK_a)) {
-        angle = SDL_fmod(angle - angularSpeed, 2 * 3.1416);
+        angle = SDL_fmod(angle - angularDisplacement, 2 * 3.1416);
     } else if (im.IsKeyDown(SDLK_d)) {
-        angle = SDL_fmod(angle + angularSpeed, 2 * 3.1416);
+        angle = SDL_fmod(angle + angularDisplacement, 2 * 3.1416);
     }
     associated.angleDeg = angle * DEGRADRATIO;
     Vec2 currentPos = associated.box.GetCenter();
@@ -83,16 +84,27 @@ void PenguinBody::Update (float dt) {
     }
 
     if (hp <= 0) {
-        std::string file = "img/penguindeath.png";
-        GameObject* deathGo = new GameObject(associated.z);
-        deathGo->box = associated.box;
-        Sprite* deathSprite = new Sprite(*deathGo, file, 5, 0.2, true, false, 1.0, 0.4);
-        Sound* deathSound = new Sound(*deathGo, "audio/boom.wav");
-        deathSound->Play();
-        deathGo->AddComponent(deathSprite);
-        deathGo->AddComponent(deathSound);
-        Game::GetInstance().GetCurrentState().AddObject(deathGo);
-        associated.RequestDelete();
+        associated.box = associated.previousBox;
+        associated.RemoveComponent(associated.GetComponent("Sprite"));
+        pcannon.lock()->RemoveComponent(pcannon.lock()->GetComponent("Sprite"));
+        float timeToDie = 1.0;
+        deathTimer.Update(dt);
+        if (isDying) {
+            if (deathTimer.Get() >= timeToDie) {
+                associated.RequestDelete();
+            }
+        } else {
+            std::string file = "img/penguindeath.png";
+            GameObject* deathGo = new GameObject(associated.z);
+            deathGo->box = associated.box;
+            Sprite* deathSprite = new Sprite(*deathGo, file, 5, 0.2, true, false, 1.0, 0.4);
+            Sound* deathSound = new Sound(*deathGo, "audio/boom.wav");
+            deathSound->Play();
+            deathGo->AddComponent(deathSprite);
+            deathGo->AddComponent(deathSound);
+            Game::GetInstance().GetCurrentState().AddObject(deathGo);
+            isDying = true;
+        }
     }
 }
 

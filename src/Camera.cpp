@@ -8,6 +8,7 @@
 std::weak_ptr<GameObject> Camera::focus;
 Vec2 Camera::pos = Vec2(0, 0);
 Vec2 Camera::speed = Vec2(0, 0);
+Vec2 Camera::prevPos = Vec2(0, 0);
 
 void Camera::Follow (std::weak_ptr<GameObject> newFocus) {
     focus = newFocus;
@@ -18,6 +19,7 @@ void Camera::Unfollow () {
 }
 
 void Camera::Update (float dt) {
+    prevPos = pos;
     // Checar inputs
     if (focus.expired()) {
         InputManager& im = InputManager::GetInstance();
@@ -57,5 +59,6 @@ void Camera::Update (float dt) {
 
 void Camera::Reset () {
     pos = Vec2(0,0);
+    prevPos = Vec2(0, 0);
     speed = Vec2(0,0);
 }

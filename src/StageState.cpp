@@ -111,6 +111,15 @@ void StageState::Start () {
 	started = true;
 }
 
+// For interpolation
+void StageState::RecordPreviousPosOfObjects () {
+	for (auto it : objectArray) {
+		it->previousBox = it->box;
+		it->previousAngleDeg = it->angleDeg;
+		it->previousZ = it->z;
+	}
+} 
+
 void StageState::UpdateArray (float dt) {
 	for (auto it : objectArray) {
 		if (cameraFocus.expired() || it.get() != cameraFocus.lock().get()) {
@@ -163,6 +172,7 @@ void StageState::Update (float dt) {
 		popRequested = true;
 	}
 
+	RecordPreviousPosOfObjects();
 	Input();
 	Camera camera;
 	// Atualiza foco da câmera primeiro.
@@ -190,8 +200,8 @@ void StageState::Update (float dt) {
 	// PrintDebugInfo();
 }
 
-void StageState::Render () {
-	RenderArray();
+void StageState::Render (float alpha) {
+	RenderArray(alpha);
 }
 
 void StageState::Input() {
@@ -200,7 +210,6 @@ void StageState::Input() {
 
 	if (inputM.KeyPress(SDLK_c)) {
 		if (cameraFocus.expired()) {
-			printf("lol\n");
 			camera.Follow(player);
 			AddCameraFocus(player);
 		} else {
@@ -221,7 +230,7 @@ void StageState::RemoveCameraFocus () {
 void StageState::PrintDebugInfo () {
 	if (!player.expired()) {
 		Rect box = player.lock()->box;
-		Camera camera;
+		// Camera camera;
 		system("cls");
 		printf("penguin (go): %f, %f\n",  (box.x), (box.y));
 		fflush(stdout);

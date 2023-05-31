@@ -18,8 +18,11 @@ class Game {
     std::stack<std::unique_ptr<State>> stateStack;
     int frameStart {0};
     float dt {0};
+    float timestep {0.016};
     void CalculateDeltaTime ();
     Game (std::string title, int width, int height);
+    bool UpdateStateStack ();
+    void Cleanup ();
 
  public:
     ~Game();

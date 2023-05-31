@@ -28,7 +28,8 @@ void Text::Update (float dt) {
 
 void Text::Render () {
     RenderQueue& rq = RenderQueue::GetInstance();
-    rq.QueueJob(texture, associated.box.x, associated.box.y, associated.z, 0, 0, associated.box.w, associated.box.h);
+    rq.QueueJob(texture, associated.box.x, associated.box.y, associated.z, 0, 0, associated.box.w, associated.box.h, 
+        associated.box.x, associated.box.y);
 }
 
 bool Text::Is (std::string type) {

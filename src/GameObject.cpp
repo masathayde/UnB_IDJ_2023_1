@@ -66,3 +66,37 @@ void GameObject::NotifyCollision (GameObject& other) {
         it->NotifyCollision(other);
     }
 }
+
+// Rect GameObject::GetBox () {
+//     return box;
+// }
+
+// Rect GameObject::GetPreviousBox () {
+//     return previousBox;
+// }
+
+// void GameObject::ChangeBox (Rect newBox) {
+//     previousBox = box;
+//     box = newBox;
+// }
+
+// void GameObject::ChangeBoxPosition (float newX, float newY) {
+//     previousBox = box;
+//     box.x = newX;
+//     box.y = newY;
+// }
+
+// void GameObject::ChangeBoxDimensions (float newW, float newH) {
+//     previousBox = box;
+//     box.w = newW;
+//     box.h = newH;
+// }
+
+// double GameObject::GetAngle () {
+//     return angleDeg;
+// }
+
+// void GameObject::ChangeAngle (double newAngle) {
+//     previousAngleDeg = angleDeg;
+//     angleDeg = newAngle;
+// }

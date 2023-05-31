@@ -43,6 +43,7 @@ void Alien::Start () {
 
 void Alien::Update (float dt) {
     AI(dt);
+    // ManualControl(dt);
 
     float angularSpeed = 180 / 9;
     associated.angleDeg = fmod(associated.angleDeg - (angularSpeed * dt), 360);

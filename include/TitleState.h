@@ -16,7 +16,7 @@ class TitleState : public State {
     ~TitleState ();
     void LoadAssets ();
     void Update (float dt);
-    void Render ();
+    void Render (float alpha = 1.0);
     void Start ();
     void Pause ();
     void Resume ();

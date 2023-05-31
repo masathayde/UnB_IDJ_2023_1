@@ -14,7 +14,7 @@ class State {
 
    virtual void StartArray ();
    virtual void UpdateArray (float dt);
-   virtual void RenderArray ();
+   virtual void RenderArray (float alpha);
 
  public:
    State();
@@ -23,7 +23,7 @@ class State {
    bool PopRequested ();
    virtual void LoadAssets()=0;
    virtual void Update(float dt)=0;
-   virtual void Render()=0;
+   virtual void Render(float alpha = 1.0)=0;
    virtual void Start ()=0;
    virtual void Pause ()=0;
    virtual void Resume ()=0;

@@ -112,43 +112,44 @@ void Game::Run () {
     if (storedState == nullptr)
         return;
 
+    Uint32 delay = 33;
+
+    float accumulator = 0.0;
     stateStack.emplace(storedState);
     storedState = nullptr;
     stateStack.top()->Start();
     while (!stateStack.empty() && stateStack.top()->QuitRequested() == false) {
-        if (stateStack.top()->PopRequested()) {
-            stateStack.pop();
-            Resources::ClearAll();
-            if (!stateStack.empty()) {
-                stateStack.top()->Resume();
-            } else if (storedState == nullptr) {
-                break;
-            } else {
-                stateStack.emplace(storedState);
-                stateStack.top()->Start();
-                storedState = nullptr;
-            }
-        }
-        if (storedState != nullptr) {
-            stateStack.top()->Pause();
-            stateStack.emplace(storedState);
-            stateStack.top()->Start();
-            storedState = nullptr;
-        }
-        
         CalculateDeltaTime();
-        InputManager::GetInstance().Update();
-        stateStack.top()->Update(dt);
-        stateStack.top()->Render();
+        accumulator += dt;
+
+        while (accumulator >= timestep) {
+            bool noStateInStack = UpdateStateStack();
+            if (noStateInStack) {
+                Cleanup();
+                return;
+            }
+
+            InputManager::GetInstance().Update();
+            stateStack.top()->Update(timestep);
+            accumulator -= timestep;
+
+            if (InputManager::GetInstance().KeyPress(SDLK_p)) {
+                if (delay == 33) {
+                    delay = 16;
+                } else if (delay == 16) {
+                    delay = 33;
+                }
+            }
+            
+        }
+    
+        float alpha = accumulator / timestep;
+        stateStack.top()->Render(alpha);
         SDL_RenderPresent(renderer);
-        SDL_Delay(33);
+        SDL_Delay(16);
     }
     
-    while (!stateStack.empty()) {
-        stateStack.pop();
-    }
-
-    Resources::ClearAll();
+    Cleanup ();
 }
 
 void Game::CalculateDeltaTime () {
@@ -158,4 +159,36 @@ void Game::CalculateDeltaTime () {
 
 float Game::GetDeltaTime () {
     return dt;
+}
+
+// Returns true if there are no states in the stack and no state in storedState
+bool Game::UpdateStateStack () {
+    if (stateStack.top()->PopRequested()) {
+        stateStack.pop();
+        Resources::ClearAll();
+        if (!stateStack.empty()) {
+            stateStack.top()->Resume();
+        } else if (storedState == nullptr) {
+            return true;
+        } else {
+            stateStack.emplace(storedState);
+            stateStack.top()->Start();
+            storedState = nullptr;
+        }
+    }
+    if (storedState != nullptr) {
+        stateStack.top()->Pause();
+        stateStack.emplace(storedState);
+        stateStack.top()->Start();
+        storedState = nullptr;
+    }
+    return false;
+}
+
+void Game::Cleanup () {
+    while (!stateStack.empty()) {
+        stateStack.pop();
+    }
+
+    Resources::ClearAll();
 }

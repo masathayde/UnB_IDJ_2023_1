@@ -7,6 +7,7 @@ class Camera {
     static std::weak_ptr<GameObject> focus;
 
  public:
+    static Vec2 prevPos;
     static Vec2 pos;
     static Vec2 speed;
     static void Follow (std::weak_ptr<GameObject> newFocus);

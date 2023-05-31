@@ -16,10 +16,13 @@ class GameObject {
     bool isDead;
 
  public:
-    Rect box;
-    double angleDeg {0.0};
-    float z;
     bool started;
+    Rect box {0, 0, 0, 0};
+    Rect previousBox {0, 0, 0, 0};
+    double angleDeg {0.0};
+    double previousAngleDeg {0.0};
+    float previousZ;
+    float z;
     GameObject (int z = 0);
     ~GameObject ();
     void Update (float dt);
@@ -31,6 +34,13 @@ class GameObject {
     Component* GetComponent (std::string type);
     void Start ();
     void NotifyCollision (GameObject& other);
+    // Rect GetBox ();
+    // Rect GetPreviousBox ();
+    // void ChangeBox (Rect box);
+    // void ChangeBoxPosition (float x, float y);
+    // void ChangeBoxDimensions (float w, float h);
+    // double GetAngle ();
+    // void ChangeAngle (double angle);
 };
 
 #endif

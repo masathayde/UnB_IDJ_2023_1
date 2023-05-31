@@ -1,6 +1,7 @@
 #ifndef PENGUINBODY_H_
 #define PENGUINBODY_H_
 #include "Component.h"
+#include "Timer.h"
 
 class PenguinBody : public Component {
 
@@ -12,6 +13,8 @@ class PenguinBody : public Component {
     float maxSpeed {400};
     float minSpeed {-400};
     float accel {25};
+    Timer deathTimer;
+    bool isDying {false};
 
  public:
     PenguinBody (GameObject& associated);

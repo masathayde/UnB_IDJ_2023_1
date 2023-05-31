@@ -18,6 +18,8 @@ class RenderQueue {
         float x;
         float y;
         float z;
+        float prevX;
+        float prevY;
         // For SetClip
         int x_offset;
         int y_offset;
@@ -25,6 +27,7 @@ class RenderQueue {
         int tileHeight;
         Vec2 scale;
         float angleDeg;
+        float prevAngleDeg;
     } renderJob;
 
     typedef struct {
@@ -42,8 +45,9 @@ class RenderQueue {
 
  public:
     static RenderQueue& GetInstance ();
-    void QueueJob (SDL_Texture* sprtPtr, float x, float y, float z, int xO, int yO, int w, int h, float angleDeg = 0, Vec2 scale = Vec2(1,1));
-    void RenderJobs ();
+    void QueueJob (SDL_Texture* sprtPtr, float x, float y, float z, int xO, int yO, int w, int h,
+        float prevX, float prevY, float prevAngleDeg = 0, float angleDeg = 0, Vec2 scale = Vec2(1,1));
+    void RenderJobs (float alpha = 1.0);
     void QueueCollisionBoxRender (Rect box, float angle);
 };
 
